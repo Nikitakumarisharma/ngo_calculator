@@ -42,7 +42,7 @@ export default function Home() {
   };
 
   return (
-    <div className="w-full bg-gradient-to-br from-gray-50 to-blue-50 py-8 px-4">
+    <div className="w-full bg-white py-8 px-4">
       <div className="w-full mx-auto">
         {/* Show Invoice Preview INSTEAD of form after checkout */}
         {showPreview ? (

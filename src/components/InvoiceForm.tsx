@@ -68,21 +68,21 @@ export default function InvoiceForm({ onInvoiceChange }: InvoiceFormProps) {
   return (
     <div className="bg-white rounded-2xl shadow-xl p-8 w-full mx-auto">
       <div className="flex items-center gap-3 mb-8">
-        <FaFileInvoice className="text-3xl text-blue-600" />
-        <h1 className="text-3xl font-bold text-gray-800">Invoice Generator</h1>
+        <FaFileInvoice className="text-3xl text-green-500" />
+        <h1 className="text-3xl font-bold text-[#7C5128]">Invoice Generator</h1>
       </div>
 
 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
   {/* Company Type */}
   <div>
     <div className="flex items-center gap-2 mb-2">
-      <FaBuilding className="text-blue-600" />
+      <FaBuilding className="text-green-500" />
       <label className="text-base font-semibold text-gray-700">Company Type</label>
     </div>
     <select
       value={companyType}
       onChange={(e) => setCompanyType(e.target.value as CompanyType)}
-      className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none text-gray-700 bg-white"
+      className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-[#C2FEBC] focus:outline-none text-gray-700 bg-white"
     >
       {COMPANY_TYPES.map((type) => (
         <option key={type} value={type}>
@@ -104,7 +104,7 @@ export default function InvoiceForm({ onInvoiceChange }: InvoiceFormProps) {
         const state = STATES.find((s) => s.name === e.target.value);
         if (state) setSelectedState(state);
       }}
-      className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:outline-none text-gray-700 bg-white"
+      className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-[#C2FEBC] focus:outline-none text-gray-700 bg-white"
     >
       {STATES.map((state) => (
         <option key={state.name} value={state.name}>
@@ -120,47 +120,54 @@ export default function InvoiceForm({ onInvoiceChange }: InvoiceFormProps) {
       {/* Add-ons Selection */}
       <div className="mb-8">
         <div className="flex items-center gap-2 mb-4">
-          <FaPlus className="text-purple-600" />
-          <label className="text-lg font-semibold text-gray-700">Add-ons</label>
+          <FaPlus className="text-green-500 text-sm" />
+          <label className="text-base font-semibold text-[#7C5128]">Add-ons</label>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
           {addOns.map((addon) => (
             <div
               key={addon.id}
               onClick={() => handleAddOnToggle(addon.id)}
-              className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 ${
+              className={`p-3 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
                 addon.selected
-                  ? 'border-purple-500 bg-purple-50'
-                  : 'border-gray-200 hover:border-purple-300'
+                  ? 'border-[#699c64] bg-[#cff0cc]'
+                  : 'border-gray-200 hover:border-[#C2FEBC]'
               }`}
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
+              <div className="flex flex-col space-y-2">
+                {/* Top row - checkbox and name */}
+                <div className="flex items-center gap-2">
                   {addon.selected ? (
-                    <FaCheckCircle className="text-purple-600 text-xl" />
+                    <FaCheckCircle className="text-green-700 text-sm flex-shrink-0" />
                   ) : (
-                    <FaCheckCircle className="text-gray-400 text-xl" />
+                    <FaCheckCircle className="text-gray-400 text-sm flex-shrink-0" />
                   )}
-                  <div className="flex items-center gap-2">
-                    <span className={`font-medium ${
-                      addon.selected ? 'text-purple-700' : 'text-gray-700'
-                    }`}>
-                      {addon.name}
-                    </span>
-                   {(addon.id === 'gst' || addon.id === 'trademark' || addon.id === 'msme') && (
-  <div className="flex items-center gap-1">
-    <HiLightBulb className="text-yellow-500 text-lg" title="Important Service" />
-    <span className="text-yellow-600 text-sm font-medium">Recommended</span>
-  </div>
-)}
-
-                  </div>
+                  <span className={`text-sm font-medium truncate ${
+                    addon.selected ? 'text-[#7C5128]' : 'text-gray-700'
+                  }`}>
+                    {addon.name}
+                  </span>
                 </div>
-                <span className={`font-bold ${
-                  addon.selected ? 'text-purple-700' : 'text-gray-600'
-                }`}>
-                  ₹{addon.price.toLocaleString()}
-                </span>
+
+                {/* Bottom row - Recommended badge and Price */}
+                <div className="flex items-center justify-between">
+                  {/* Recommended badge */}
+                  {(addon.id === 'gst' || addon.id === 'trademark' || addon.id === 'msme') ? (
+                    <div className="flex items-center gap-1">
+                      <HiLightBulb className="text-yellow-500 text-xs flex-shrink-0" title="Important Service" />
+                      <span className="text-yellow-600 text-xs font-medium">Recommended</span>
+                    </div>
+                  ) : (
+                    <div></div> // Empty div to maintain spacing
+                  )}
+
+                  {/* Price */}
+                  <span className={`text-sm font-bold ${
+                    addon.selected ? 'text-[#634020]' : 'text-gray-600'
+                  }`}>
+                    ₹{addon.price.toLocaleString('en-IN')}
+                  </span>
+                </div>
               </div>
             </div>
           ))}
