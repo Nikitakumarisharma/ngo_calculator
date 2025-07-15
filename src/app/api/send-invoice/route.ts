@@ -5,6 +5,7 @@ import { InvoiceData, CustomerInfo } from '../../../types/invoice';
 interface EmailRequest {
   invoice: InvoiceData;
   customer: CustomerInfo;
+  mode?: 'checkout' | 'download';
 }
 
 // Create transporter (you'll need to configure this with your email service)
@@ -21,7 +22,7 @@ const createTransporter = () => {
   });
 };
 
-const generateInvoiceHTML = (invoice: InvoiceData, customer: CustomerInfo) => {
+const generateInvoiceHTML = (invoice: InvoiceData, customer: CustomerInfo, mode: string = 'checkout') => {
   const formatCurrency = (amount: number) => `${amount.toLocaleString()}`;
   
   return `
@@ -46,7 +47,7 @@ const generateInvoiceHTML = (invoice: InvoiceData, customer: CustomerInfo) => {
     <body>
       <div class="container">
         <div class="header">
-          <h1>🧾 Invoice Generated</h1>
+          <h1>${mode === 'download' ? '📄 PDF Download Request' : '🧾 Invoice Generated'}</h1>
           <p>Company Registration Services</p>
         </div>
         
@@ -99,8 +100,10 @@ const generateInvoiceHTML = (invoice: InvoiceData, customer: CustomerInfo) => {
           </div>
           
           <p style="margin-top: 30px; text-align: center; color: #666;">
-            Thank you for choosing our services!<br>
-            For any queries, please contact our support team.
+            ${mode === 'download'
+              ? 'Customer has downloaded the PDF invoice.<br>Please follow up for further assistance.'
+              : 'Thank you for choosing our services!<br>For any queries, please contact our support team.'
+            }
           </p>
         </div>
       </div>
@@ -111,7 +114,7 @@ const generateInvoiceHTML = (invoice: InvoiceData, customer: CustomerInfo) => {
 
 export async function POST(request: NextRequest) {
   try {
-    const { invoice, customer }: EmailRequest = await request.json();
+    const { invoice, customer, mode = 'checkout' }: EmailRequest = await request.json();
 
     // Validate required fields
     if (!invoice || !customer || !customer.fullName || !customer.contactNumber) {
@@ -125,13 +128,15 @@ export async function POST(request: NextRequest) {
     const transporter = createTransporter();
 
     // Generate HTML content
-    const htmlContent = generateInvoiceHTML(invoice, customer);
+    const htmlContent = generateInvoiceHTML(invoice, customer, mode);
 
     // Email options
     const mailOptions = {
       from: process.env.EMAIL_USER || 'your-email@gmail.com',
       to: process.env.ADMIN_EMAIL || 'admin@yourcompany.com', // Your email to receive invoices
-      subject: `New Invoice - ${customer.fullName} (${invoice.companyType} - ${invoice.state.name})`,
+      subject: mode === 'download'
+        ? `PDF Download Request - ${customer.fullName} (${invoice.companyType} - ${invoice.state.name})`
+        : `New Invoice - ${customer.fullName} (${invoice.companyType} - ${invoice.state.name})`,
       html: htmlContent,
       replyTo: customer.contactNumber // You might want to add customer email field
     };

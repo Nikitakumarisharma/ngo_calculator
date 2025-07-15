@@ -41,9 +41,26 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, invoice, mod
 
     try {
       if (mode === 'download') {
-        // For download mode, generate and download PDF directly
+        // For download mode, send contact details via email AND generate PDF
+        const response = await fetch('/api/send-invoice', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            invoice,
+            customer: data,
+            mode: 'download' // Add mode to distinguish in API
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to send contact details');
+        }
+
+        // Generate and download PDF after sending email
         const { generateInvoicePDF } = await import('../utils/pdfGenerator');
-        await generateInvoicePDF(invoice);
+        await generateInvoicePDF(invoice, data);
 
         // Close modal and reset form
         onClose();

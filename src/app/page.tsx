@@ -28,10 +28,10 @@ export default function Home() {
     setInvoice(newInvoice);
   };
 
-  const handleCheckout = () => {
-    setModalMode('checkout');
-    setIsModalOpen(true);
-  };
+  // const handleCheckout = () => {
+  //   setModalMode('checkout');
+  //   setIsModalOpen(true);
+  // };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -60,14 +60,14 @@ export default function Home() {
 
             {/* Action Buttons */}
             <div className="mb-8">
-  <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
     {/* Checkout Invoice */}
-    <button
+    {/* <button
       onClick={handleCheckout}
       className="bg-white text-Black border-2 border-gray-800 font-bold py-4 px-6 rounded-xl shadow-lg flex items-center justify-center gap-3"
     >
       🛒 Checkout Invoice
-    </button>
+    </button> */}
 
     {/* Pay Now */}
     <button

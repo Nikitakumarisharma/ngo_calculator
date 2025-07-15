@@ -4,11 +4,11 @@ import React, { useState, useEffect } from 'react';
 import {
   FaBuilding,
   FaMapMarkerAlt,
-  FaCheckCircle,
+  // FaCheckCircle,
   FaPlus,
   FaFileInvoice
 } from 'react-icons/fa';
-import { HiLightBulb } from "react-icons/hi";
+// import { HiLightBulb } from "react-icons/hi";
 import {
   CompanyType,
   StateInfo,
@@ -72,7 +72,7 @@ export default function InvoiceForm({ onInvoiceChange }: InvoiceFormProps) {
         <h1 className="text-3xl font-bold text-[#7C5128]">Invoice Generator</h1>
       </div>
 
-<div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+<div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
   {/* Company Type */}
   <div>
     <div className="flex items-center gap-2 mb-2">
@@ -108,71 +108,55 @@ export default function InvoiceForm({ onInvoiceChange }: InvoiceFormProps) {
     >
       {STATES.map((state) => (
         <option key={state.name} value={state.name}>
-          {state.name} - State Filing Fee : ₹{state.fees[companyType].toLocaleString()}
+          {state.name} 
         </option>
       ))}
     </select>
+  </div>
 
+  {/* Add-ons */}
+  <div>
+    <div className="flex items-center gap-2 mb-2">
+      <FaPlus className="text-green-500 text-sm" />
+      <label className="text-base font-semibold text-[#7C5128]">Add-ons</label>
+    </div>
+    <select
+      onChange={(e) => handleAddOnToggle(e.target.value)}
+      value=""
+      className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:outline-none text-gray-700 bg-white"
+    >
+      <option value="" disabled>-- Select an Add-on --</option>
+      {addOns.map((addon) => (
+        <option key={addon.id} value={addon.id}>
+          {addon.name} (₹{addon.price.toLocaleString('en-IN')})
+          {['gst', 'trademark', 'msme'].includes(addon.id) ? ' - Recommended' : ''}
+        </option>
+      ))}
+    </select>
+    {addOns.some((addon) => addon.selected) && (
+      <div className="flex flex-wrap gap-2 mt-2">
+        {addOns
+          .filter((addon) => addon.selected)
+          .map((addon) => (
+            <span
+              key={addon.id}
+              className="inline-flex items-center px-3 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full"
+            >
+              {addon.name}
+              <button
+                onClick={() => handleAddOnToggle(addon.id)}
+                className="ml-2 text-red-400 hover:text-red-600 text-xs"
+              >
+                ×
+              </button>
+            </span>
+          ))}
+      </div>
+    )}
   </div>
 </div>
 
 
-      {/* Add-ons Selection */}
-      <div className="mb-8">
-        <div className="flex items-center gap-2 mb-4">
-          <FaPlus className="text-green-500 text-sm" />
-          <label className="text-base font-semibold text-[#7C5128]">Add-ons</label>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-          {addOns.map((addon) => (
-            <div
-              key={addon.id}
-              onClick={() => handleAddOnToggle(addon.id)}
-              className={`p-3 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
-                addon.selected
-                  ? 'border-[#699c64] bg-[#cff0cc]'
-                  : 'border-gray-200 hover:border-[#C2FEBC]'
-              }`}
-            >
-              <div className="flex flex-col space-y-2">
-                {/* Top row - checkbox and name */}
-                <div className="flex items-center gap-2">
-                  {addon.selected ? (
-                    <FaCheckCircle className="text-green-700 text-sm flex-shrink-0" />
-                  ) : (
-                    <FaCheckCircle className="text-gray-400 text-sm flex-shrink-0" />
-                  )}
-                  <span className={`text-sm font-medium truncate ${
-                    addon.selected ? 'text-[#7C5128]' : 'text-gray-700'
-                  }`}>
-                    {addon.name}
-                  </span>
-                </div>
-
-                {/* Bottom row - Recommended badge and Price */}
-                <div className="flex items-center justify-between">
-                  {/* Recommended badge */}
-                  {(addon.id === 'gst' || addon.id === 'trademark' || addon.id === 'msme') ? (
-                    <div className="flex items-center gap-1">
-                      <HiLightBulb className="text-yellow-500 text-xs flex-shrink-0" title="Important Service" />
-                      <span className="text-yellow-600 text-xs font-medium">Recommended</span>
-                    </div>
-                  ) : (
-                    <div></div> // Empty div to maintain spacing
-                  )}
-
-                  {/* Price */}
-                  <span className={`text-sm font-bold ${
-                    addon.selected ? 'text-[#634020]' : 'text-gray-600'
-                  }`}>
-                    ₹{addon.price.toLocaleString('en-IN')}
-                  </span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }
