@@ -32,6 +32,9 @@ export interface InvoiceData {
   addOns: AddOn[];
   baseFees: BaseFees;
   total: number;
+  subtotal?: number;
+  discount?: number;
+  hasSpecialOffer?: boolean;
 }
 
 export interface CustomerInfo {

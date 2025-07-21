@@ -4,11 +4,9 @@ import React, { useState, useEffect } from 'react';
 import {
   FaBuilding,
   FaMapMarkerAlt,
-  // FaCheckCircle,
   FaPlus,
   FaFileInvoice
 } from 'react-icons/fa';
-// import { HiLightBulb } from "react-icons/hi";
 import {
   CompanyType,
   StateInfo,
@@ -39,7 +37,15 @@ export default function InvoiceForm({ onInvoiceChange }: InvoiceFormProps) {
     // Get the correct fees for the selected company type
     const baseFees = BASE_FEES_BY_TYPE[companyType];
     const stateFee = selectedState.fees[companyType];
-    const total = baseFees.dsc + baseFees.runPanTan + baseFees.professionalFee + stateFee + addOnTotal;
+    const subtotal = baseFees.dsc + baseFees.runPanTan + baseFees.professionalFee + stateFee + addOnTotal;
+
+    // Check for special offer - if user selects trademark, iso, startup-india, and iec
+    const offerAddons = ['trademark', 'iso', 'startup-india', 'iec'];
+    const selectedOfferAddons = selectedAddOns.filter(addon => offerAddons.includes(addon.id));
+    const hasSpecialOffer = selectedOfferAddons.length === 4; // All 4 offer addons selected
+
+    const discount = hasSpecialOffer ? 2000 : 0;
+    const total = subtotal - discount;
 
     const invoiceData: InvoiceData = {
       companyType,
@@ -49,7 +55,10 @@ export default function InvoiceForm({ onInvoiceChange }: InvoiceFormProps) {
       },
       addOns: selectedAddOns,
       baseFees: baseFees,
-      total
+      total,
+      subtotal,
+      discount,
+      hasSpecialOffer
     };
 
     onInvoiceChange(invoiceData);
@@ -114,6 +123,9 @@ export default function InvoiceForm({ onInvoiceChange }: InvoiceFormProps) {
     </select>
   </div>
 
+  {/* Special Offer Message */}
+ 
+
   {/* Add-ons */}
   <div>
     <div className="flex items-center gap-2 mb-2">
@@ -155,7 +167,16 @@ export default function InvoiceForm({ onInvoiceChange }: InvoiceFormProps) {
     )}
   </div>
 </div>
-
+ <div className=" p-3 bg-blue-50 border border-blue-200 rounded-lg">
+    <div className="text-center">
+      <p className="text-blue-700 font-medium text-sm mb-1">
+🎯 Select any 4 services — Trademark, ISO, Startup India, IEC — and get ₹2,000 OFF instantly!
+      </p>
+      <p className="text-blue-600 text-xs">
+        ⏰ Applicable for today - until 12 AM tonight
+      </p>
+    </div>
+  </div>
 
     </div>
   );

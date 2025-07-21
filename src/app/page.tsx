@@ -58,6 +58,40 @@ export default function Home() {
               <InvoiceForm onInvoiceChange={handleInvoiceChange} />
             </div>
 
+            {/* Price Summary */}
+            {(invoice.hasSpecialOffer || invoice.discount) && (
+              <div className="mb-6 p-4 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl">
+                <h3 className="text-lg font-bold text-green-700 mb-3 flex items-center gap-2">
+                  🎉 Price Breakdown
+                </h3>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-700">Subtotal:</span>
+                    <span className="text-gray-700">₹{invoice.subtotal?.toLocaleString('en-IN')}</span>
+                  </div>
+                  {invoice.discount && invoice.discount > 0 && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-green-600 font-medium">Special Offer Discount:</span>
+                      <span className="text-green-600 font-bold">-₹{invoice.discount.toLocaleString('en-IN')}</span>
+                    </div>
+                  )}
+                  <div className="border-t border-green-200 pt-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg font-bold text-green-700">Final Total:</span>
+                      <span className="text-xl font-bold text-green-700">₹{invoice.total.toLocaleString('en-IN')}</span>
+                    </div>
+                  </div>
+                  {invoice.hasSpecialOffer && (
+                    <div className="bg-green-100 p-2 rounded-lg text-center">
+                      <span className="text-green-700 font-medium text-sm">
+                        🎊 You saved ₹{invoice.discount?.toLocaleString('en-IN')} with our special offer!
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Action Buttons */}
             <div className="mb-8">
   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
