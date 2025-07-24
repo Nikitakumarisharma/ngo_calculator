@@ -103,23 +103,23 @@ export const AVAILABLE_ADDONS: Omit<AddOn, 'selected'>[] = [
 export const BASE_FEES_BY_TYPE: Record<CompanyType, BaseFees> = {
   'Pvt': {
     dsc: 4720,
-    runPanTan: 1456,
-    professionalFee: 1499,
+    runPanTan: 2456,
+    professionalFee: 2499,
   },
   'OPC': {
     dsc: 4720,
-    runPanTan: 1456,
-    professionalFee: 1499,
+    runPanTan: 2456,
+    professionalFee: 2499,
   },
   'LLP': {
     dsc: 4720,
-    runPanTan: 1456,
-    professionalFee: 1499,
+    runPanTan:2456,
+    professionalFee: 2499,
   },
   'Section-8': {
     dsc: 4720,
-    runPanTan: 1456,
-    professionalFee: 1499,
+    runPanTan: 2456,
+    professionalFee: 2499,
   }
 };
 
