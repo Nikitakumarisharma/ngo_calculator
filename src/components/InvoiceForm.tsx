@@ -18,7 +18,7 @@ interface InvoiceFormProps {
 }
 
 export default function InvoiceForm({ onInvoiceChange }: InvoiceFormProps) {
-  const [companyType, setCompanyType] = useState<CompanyType>('Pvt');
+  const [companyType, setCompanyType] = useState<CompanyType>('Private limited company');
   const [selectedState, setSelectedState] = useState<StateInfo>(STATES[5]);
   const [addOns, setAddOns] = useState<AddOn[]>(
     AVAILABLE_ADDONS.map(addon => ({ ...addon, selected: false }))
@@ -154,7 +154,7 @@ export default function InvoiceForm({ onInvoiceChange }: InvoiceFormProps) {
       <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
         <div className="text-center">
           <p className="text-blue-700 font-medium text-sm mb-1">
-            🎯 Select any 4 services — Trademark, ISO, Startup India, IEC — and get ₹2,000 OFF instantly!
+            🎯 Select 4 services — Trademark, ISO, Startup India, IEC — and get ₹2,000 OFF instantly!
           </p>
           <p className="text-blue-600 text-xs">
             ⏰ Applicable for today - until 12 AM tonight

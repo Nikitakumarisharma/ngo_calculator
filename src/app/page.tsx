@@ -9,7 +9,7 @@ import CheckoutModal from '../components/CheckoutModal';
 import { InvoiceData, STATES, BASE_FEES_BY_TYPE } from '../types/invoice';
 
 export default function Home() {
-  const defaultCompanyType = 'Pvt';
+  const defaultCompanyType = 'Private limited company';
   const defaultBaseFees = BASE_FEES_BY_TYPE[defaultCompanyType];
   const [invoice, setInvoice] = useState<InvoiceData>({
     companyType: defaultCompanyType,
@@ -54,39 +54,6 @@ export default function Home() {
               <InvoiceForm onInvoiceChange={handleInvoiceChange} />
             </div>
 
-            {(invoice.hasSpecialOffer || invoice.discount) && (
-              <div className="mb-6 p-4 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl">
-                <h3 className="text-lg font-bold text-green-700 mb-3 flex items-center gap-2">
-                  🎉 Price Breakdown
-                </h3>
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-700">Subtotal:</span>
-                    <span className="text-gray-700">₹{invoice.subtotal?.toLocaleString('en-IN')}</span>
-                  </div>
-                  {invoice.discount && invoice.discount > 0 && (
-                    <div className="flex justify-between items-center">
-                      <span className="text-green-600 font-medium">Special Offer Discount:</span>
-                      <span className="text-green-600 font-bold">-₹{invoice.discount.toLocaleString('en-IN')}</span>
-                    </div>
-                  )}
-                  <div className="border-t border-green-200 pt-2">
-                    <div className="flex justify-between items-center">
-                      <span className="text-lg font-bold text-green-700">Final Total:</span>
-                      <span className="text-xl font-bold text-green-700">₹{invoice.total.toLocaleString('en-IN')}</span>
-                    </div>
-                  </div>
-                  {invoice.hasSpecialOffer && (
-                    <div className="bg-green-100 p-2 rounded-lg text-center">
-                      <span className="text-green-700 font-medium text-sm">
-                        🎊 You saved ₹{invoice.discount?.toLocaleString('en-IN')} with our special offer!
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
             {/* Action Buttons */}
             <div className="mb-8">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -96,7 +63,19 @@ export default function Home() {
                   }}
                   className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-200 shadow-lg flex items-center justify-center gap-3"
                 >
-                  💳 Pay Now - ₹{invoice.total.toLocaleString('en-IN')}
+                  💳 Pay Now -
+                  {invoice.discount && invoice.discount > 0 ? (
+                    <span className="flex items-center gap-2">
+                      <span className="line-through text-red-400 font-semibold">
+                        ₹{invoice.subtotal?.toLocaleString('en-IN')}
+                      </span>
+                      <span className="text-white font-bold">
+                        ₹{invoice.total.toLocaleString('en-IN')}
+                      </span>
+                    </span>
+                  ) : (
+                    <> ₹{invoice.total.toLocaleString('en-IN')}</>
+                  )}
                 </button>
 
                 <button
@@ -106,7 +85,7 @@ export default function Home() {
                   }}
                   className="bg-black text-white border-2 border-blue-300 font-bold py-4 px-6 rounded-xl shadow-lg flex items-center justify-center gap-3"
                 >
-                  📄 Download PDF
+                  📄 Download Quotation
                 </button>
 
                 <button

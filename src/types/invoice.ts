@@ -1,12 +1,13 @@
-export type CompanyType = 'Pvt' | 'OPC' | 'LLP' | 'Section-8';
+export type CompanyType = 'Private limited company' | 'One Person Company' | 'Limited Liability Partnership'
+ | 'Section 8 Company';
 
 export interface StateInfo {
   name: string;
   fees: {
-    Pvt: number;
-    OPC: number;
-    LLP: number;
-    'Section-8': number;
+    'Private limited company': number;
+    'One Person Company': number;
+    'Limited Liability Partnership': number;
+    'Section 8 Company': number;
   };
 }
 
@@ -27,7 +28,7 @@ export interface InvoiceData {
   companyType: CompanyType;
   state: {
     name: string;
-    fee: number; // The actual fee for the selected company type
+    fee: number; 
   };
   addOns: AddOn[];
   baseFees: BaseFees;
@@ -48,42 +49,78 @@ export interface InvoiceFormData extends InvoiceData {
 
 // State data with filing fees for different company types
 export const STATES: StateInfo[] = [
-  { name: 'Andaman and Nicobar Islands', fees: { Pvt: 520, OPC: 520, LLP: 643, 'Section-8': 20 } },
-  { name: 'Andhra Pradesh', fees: { Pvt: 1520, OPC: 1520, LLP: 643, 'Section-8': 1520 } },
-  { name: 'Arunachal Pradesh', fees: { Pvt: 710, OPC: 710, LLP: 643, 'Section-8': 710 } },
-  { name: 'Assam', fees: { Pvt: 525, OPC: 525, LLP: 643, 'Section-8': 525 } },
-  { name: 'Bihar', fees: { Pvt: 1600, OPC: 1600, LLP: 643, 'Section-8': 100 } },
-  { name: 'Chandigarh', fees: { Pvt: 1503, OPC: 1503, LLP: 643, 'Section-8': 3 } },
-  { name: 'Chhattisgarh', fees: { Pvt: 1510, OPC: 1510, LLP: 643, 'Section-8': 10 } },
-  { name: 'Dadar nagar', fees: { Pvt: 41, OPC: 41, LLP: 643, 'Section-8': 1 } },
-  { name: 'Daman and Diu', fees: { Pvt: 1170, OPC: 1170, LLP: 643, 'Section-8': 20 } },
-  { name: 'Delhi', fees: { Pvt: 360, OPC: 360, LLP: 643, 'Section-8': 10 } },
-  { name: 'Goa', fees: { Pvt: 1200, OPC: 1200, LLP: 643, 'Section-8': 50 } },
-  { name: 'Gujarat', fees: { Pvt: 820, OPC: 820, LLP: 643, 'Section-8': 20 } },
-  { name: 'Haryana', fees: { Pvt: 135, OPC: 135, LLP: 643, 'Section-8': 15 } },
-  { name: 'Himachal Pradesh', fees: { Pvt: 183, OPC: 123, LLP: 643, 'Section-8': 3 } },
-  { name: 'Jammu and Kashmir', fees: { Pvt: 310, OPC: 310, LLP: 643, 'Section-8': 10 } },
-  { name: 'Jharkhand', fees: { Pvt: 173, OPC: 173, LLP: 643, 'Section-8': 5 } },
-  { name: 'Karnataka', fees: { Pvt: 10020, OPC: 10020, LLP: 643, 'Section-8': 20 } },
-  { name: 'Kerala', fees: { Pvt: 3025, OPC: 3025, LLP: 643, 'Section-8': 3025 } },
-  { name: 'Lakshadweep', fees: { Pvt: 1525, OPC: 1525, LLP: 643, 'Section-8': 1525 } },
-  { name: 'Madhya Pradesh', fees: { Pvt: 7550, OPC: 7550, LLP: 643, 'Section-8': 7550 } },
-  { name: 'Maharashtra', fees: { Pvt: 1300, OPC: 1300, LLP: 643, 'Section-8': 100 } },
-  { name: 'Manipur', fees: { Pvt: 260, OPC: 260, LLP: 643, 'Section-8': 260 } },
-  { name: 'Meghalaya', fees: { Pvt: 410, OPC: 410, LLP: 643, 'Section-8': 410 } },
-  { name: 'Mizoram', fees: { Pvt: 260, OPC: 260, LLP: 643, 'Section-8': 260 } },
-  { name: 'Nagaland', fees: { Pvt: 260, OPC: 260, LLP: 643, 'Section-8': 260 } },
-  { name: 'Odisha', fees: { Pvt: 610, OPC: 610, LLP: 643, 'Section-8': 610 } },
-  { name: 'Puducherry', fees: { Pvt: 510, OPC: 510, LLP: 643, 'Section-8': 10 } },
-  { name: 'Punjab', fees: { Pvt: 10025, OPC: 10025, LLP: 643, 'Section-8': 25 } },
-  { name: 'Rajasthan', fees: { Pvt: 5500, OPC: 5500, LLP: 643, 'Section-8': 1010 } },
-  { name: 'Sikkim', fees: { Pvt: 0, OPC: 0, LLP: 643, 'Section-8': 0 } },
-  { name: 'Tamilnadu', fees: { Pvt: 520, OPC: 520, LLP: 643, 'Section-8': 20 } },
-  { name: 'Telangana', fees: { Pvt: 1520, OPC: 1520, LLP: 643, 'Section-8': 1520 } },
-  { name: 'Tripura', fees: { Pvt: 260, OPC: 260, LLP: 643, 'Section-8': 260 } },
-  { name: 'Uttar Pradesh', fees: { Pvt: 1010, OPC: 1010, LLP: 643, 'Section-8': 1010 } },
-  { name: 'Uttarakhand', fees: { Pvt: 1010, OPC: 1010, LLP: 643, 'Section-8': 1010 } },
-  { name: 'West Bengal', fees: { Pvt: 370, OPC: 370, LLP: 643, 'Section-8': 10 } },
+  { name: 'Andaman and Nicobar Islands', fees: { 'Private limited company': 520, 'One Person Company': 520, 'Limited Liability Partnership'
+: 643, 'Section 8 Company': 20 } },
+  { name: 'Andhra Pradesh', fees: { 'Private limited company': 1520, 'One Person Company': 1520, 'Limited Liability Partnership'
+: 643, 'Section 8 Company': 1520 } },
+  { name: 'Arunachal Pradesh', fees: { 'Private limited company': 710, 'One Person Company': 710, 'Limited Liability Partnership'
+: 643, 'Section 8 Company': 710 } },
+  { name: 'Assam', fees: { 'Private limited company': 525, 'One Person Company': 525, 'Limited Liability Partnership'
+: 643, 'Section 8 Company': 525 } },
+  { name: 'Bihar', fees: { 'Private limited company': 1600, 'One Person Company': 1600, 'Limited Liability Partnership'
+: 643, 'Section 8 Company': 100 } },
+  { name: 'Chandigarh', fees: { 'Private limited company': 1503, 'One Person Company': 1503, 'Limited Liability Partnership'
+: 643, 'Section 8 Company': 3 } },
+  { name: 'Chhattisgarh', fees: { 'Private limited company': 1510, 'One Person Company': 1510, 'Limited Liability Partnership'
+: 643, 'Section 8 Company': 10 } },
+  { name: 'Dadar nagar', fees: { 'Private limited company': 41, 'One Person Company': 41, 'Limited Liability Partnership'
+: 643, 'Section 8 Company': 1 } },
+  { name: 'Daman and Diu', fees: { 'Private limited company': 1170, 'One Person Company': 1170, 'Limited Liability Partnership'
+: 643, 'Section 8 Company': 20 } },
+  { name: 'Delhi', fees: { 'Private limited company': 360, 'One Person Company': 360, 'Limited Liability Partnership'
+: 643, 'Section 8 Company': 10 } },
+  { name: 'Goa', fees: { 'Private limited company': 1200, 'One Person Company': 1200, 'Limited Liability Partnership'
+: 643, 'Section 8 Company': 50 } },
+  { name: 'Gujarat', fees: { 'Private limited company': 820, 'One Person Company': 820, 'Limited Liability Partnership'
+: 643, 'Section 8 Company': 20 } },
+  { name: 'Haryana', fees: { 'Private limited company': 135, 'One Person Company': 135, 'Limited Liability Partnership'
+: 643, 'Section 8 Company': 15 } },
+  { name: 'Himachal Pradesh', fees: { 'Private limited company': 183, 'One Person Company': 123, 'Limited Liability Partnership'
+: 643, 'Section 8 Company': 3 } },
+  { name: 'Jammu and Kashmir', fees: { 'Private limited company': 310, 'One Person Company': 310, 'Limited Liability Partnership'
+: 643, 'Section 8 Company': 10 } },
+  { name: 'Jharkhand', fees: { 'Private limited company': 173, 'One Person Company': 173, 'Limited Liability Partnership'
+: 643, 'Section 8 Company': 5 } },
+  { name: 'Karnataka', fees: { 'Private limited company': 10020, 'One Person Company': 10020, 'Limited Liability Partnership'
+: 643, 'Section 8 Company': 20 } },
+  { name: 'Kerala', fees: { 'Private limited company': 3025, 'One Person Company': 3025, 'Limited Liability Partnership'
+: 643, 'Section 8 Company': 3025 } },
+  { name: 'Lakshadweep', fees: { 'Private limited company': 1525, 'One Person Company': 1525, 'Limited Liability Partnership'
+: 643, 'Section 8 Company': 1525 } },
+  { name: 'Madhya Pradesh', fees: { 'Private limited company': 7550, 'One Person Company': 7550, 'Limited Liability Partnership'
+: 643, 'Section 8 Company': 7550 } },
+  { name: 'Maharashtra', fees: { 'Private limited company': 1300, 'One Person Company': 1300, 'Limited Liability Partnership'
+: 643, 'Section 8 Company': 100 } },
+  { name: 'Manipur', fees: { 'Private limited company': 260, 'One Person Company': 260, 'Limited Liability Partnership'
+: 643, 'Section 8 Company': 260 } },
+  { name: 'Meghalaya', fees: { 'Private limited company': 410, 'One Person Company': 410, 'Limited Liability Partnership'
+: 643, 'Section 8 Company': 410 } },
+  { name: 'Mizoram', fees: { 'Private limited company': 260, 'One Person Company': 260, 'Limited Liability Partnership'
+: 643, 'Section 8 Company': 260 } },
+  { name: 'Nagaland', fees: { 'Private limited company': 260, 'One Person Company': 260, 'Limited Liability Partnership'
+: 643, 'Section 8 Company': 260 } },
+  { name: 'Odisha', fees: { 'Private limited company': 610, 'One Person Company': 610, 'Limited Liability Partnership'
+: 643, 'Section 8 Company': 610 } },
+  { name: 'Puducherry', fees: { 'Private limited company': 510, 'One Person Company': 510, 'Limited Liability Partnership'
+: 643, 'Section 8 Company': 10 } },
+  { name: 'Punjab', fees: { 'Private limited company': 10025, 'One Person Company': 10025, 'Limited Liability Partnership'
+: 643, 'Section 8 Company': 25 } },
+  { name: 'Rajasthan', fees: { 'Private limited company': 5500, 'One Person Company': 5500, 'Limited Liability Partnership'
+: 643, 'Section 8 Company': 1010 } },
+  { name: 'Sikkim', fees: { 'Private limited company': 0, 'One Person Company': 0, 'Limited Liability Partnership'
+: 643, 'Section 8 Company': 0 } },
+  { name: 'Tamilnadu', fees: { 'Private limited company': 520, 'One Person Company': 520, 'Limited Liability Partnership'
+: 643, 'Section 8 Company': 20 } },
+  { name: 'Telangana', fees: { 'Private limited company': 1520, 'One Person Company': 1520, 'Limited Liability Partnership'
+: 643, 'Section 8 Company': 1520 } },
+  { name: 'Tripura', fees: { 'Private limited company': 260, 'One Person Company': 260, 'Limited Liability Partnership'
+: 643, 'Section 8 Company': 260 } },
+  { name: 'Uttar Pradesh', fees: { 'Private limited company': 1010, 'One Person Company': 1010, 'Limited Liability Partnership'
+: 643, 'Section 8 Company': 1010 } },
+  { name: 'Uttarakhand', fees: { 'Private limited company': 1010, 'One Person Company': 1010, 'Limited Liability Partnership'
+: 643, 'Section 8 Company': 1010 } },
+  { name: 'West Bengal', fees: { 'Private limited company': 370, 'One Person Company': 370, 'Limited Liability Partnership'
+: 643, 'Section 8 Company': 10 } },
 ];
 
 
@@ -101,30 +138,35 @@ export const AVAILABLE_ADDONS: Omit<AddOn, 'selected'>[] = [
 
 // Base fees for different company types
 export const BASE_FEES_BY_TYPE: Record<CompanyType, BaseFees> = {
-  'Pvt': {
+  'Private limited company': {
     dsc: 4720,
     runPanTan: 2456,
     professionalFee: 2499,
   },
-  'OPC': {
+  'One Person Company': {
     dsc: 4720,
     runPanTan: 2456,
     professionalFee: 2499,
   },
-  'LLP': {
+  'Limited Liability Partnership': {
     dsc: 4720,
     runPanTan:2456,
     professionalFee: 2499,
   },
-  'Section-8': {
+  'Section 8 Company': {
     dsc: 4720,
     runPanTan: 2456,
     professionalFee: 2499,
   }
 };
 
-// Keep the old BASE_FEES for backward compatibility (defaults to Pvt)
-export const BASE_FEES: BaseFees = BASE_FEES_BY_TYPE.Pvt;
+export const BASE_FEES: BaseFees = BASE_FEES_BY_TYPE['Private limited company'];
 
 // Company types
-export const COMPANY_TYPES: CompanyType[] = ['Pvt', 'OPC', 'LLP', 'Section-8'];
+export const COMPANY_TYPES: CompanyType[] = [
+  'Private limited company',
+  'One Person Company',
+  'Limited Liability Partnership',
+  'Section 8 Company'
+];
+

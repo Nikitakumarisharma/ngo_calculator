@@ -106,7 +106,7 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, invoice, mod
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <h2 className="text-2xl font-bold text-gray-800">
-            {mode === 'download' ? 'Download PDF' : 'Checkout Invoice'}
+            {mode === 'download' ? 'Download Quotation' : 'Checkout Invoice'}
           </h2>
           <button
             onClick={onClose}
@@ -188,12 +188,12 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, invoice, mod
                   {isSubmitting ? (
                     <>
                       <FaSpinner className="animate-spin" />
-                      <span>{mode === 'download' ? 'Generating PDF...' : 'Generating Invoice...'}</span>
+                      <span>{mode === 'download' ? 'Generating Quotation ...' : 'Generating Invoice...'}</span>
                     </>
                   ) : (
                     <>
                       <FaEnvelope />
-                      <span>{mode === 'download' ? 'Download PDF' : 'Checkout Your Invoice'}</span>
+                      <span>{mode === 'download' ? 'Download Quotation' : 'Checkout Your Invoice'}</span>
                     </>
                   )}
                 </button>
