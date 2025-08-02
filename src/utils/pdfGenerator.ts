@@ -1,274 +1,419 @@
-import { InvoiceData, CustomerInfo } from '../types/invoice';
+import { InvoiceData, CustomerInfo } from "../types/invoice";
 
-export const generateInvoicePDF = async (invoice: InvoiceData, customer?: CustomerInfo) => {
+// Helper function to convert numbers to words (Indian numbering system)
+function numberToWords(num: number): string {
+  // Function to handle the integer part
+  const a = [
+    "",
+    "One",
+    "Two",
+    "Three",
+    "Four",
+    "Five",
+    "Six",
+    "Seven",
+    "Eight",
+    "Nine",
+    "Ten",
+    "Eleven",
+    "Twelve",
+    "Thirteen",
+    "Fourteen",
+    "Fifteen",
+    "Sixteen",
+    "Seventeen",
+    "Eighteen",
+    "Nineteen",
+  ];
+  const b = [
+    "",
+    "",
+    "Twenty",
+    "Thirty",
+    "Forty",
+    "Fifty",
+    "Sixty",
+    "Seventy",
+    "Eighty",
+    "Ninety",
+  ];
+
+  if (num === 0) return "Zero";
+
+  function inWords(n: number): string {
+    if (n < 20) return a[n];
+    if (n < 100) return b[Math.floor(n / 10)] + (n % 10 ? " " + a[n % 10] : "");
+    if (n < 1000)
+      return (
+        a[Math.floor(n / 100)] +
+        " Hundred" +
+        (n % 100 ? " and " + inWords(n % 100) : "")
+      );
+    if (n < 100000)
+      return (
+        inWords(Math.floor(n / 1000)) +
+        " Thousand" +
+        (n % 1000 ? " " + inWords(n % 1000) : "")
+      );
+    if (n < 10000000)
+      return (
+        inWords(Math.floor(n / 100000)) +
+        " Lakh" +
+        (n % 100000 ? " " + inWords(n % 100000) : "")
+      );
+    return (
+      inWords(Math.floor(n / 10000000)) +
+      " Crore" +
+      (n % 10000000 ? " " + inWords(n % 10000000) : "")
+    );
+  }
+
+  const integerPart = Math.floor(num);
+  const words = inWords(integerPart);
+
+  return words + " Only";
+}
+
+export const generateInvoicePDF = async (
+  invoice: InvoiceData,
+  customer?: CustomerInfo
+) => {
   try {
     // Dynamic import to avoid SSR issues
-    const jsPDF = (await import('jspdf')).default;
+    const jsPDF = (await import("jspdf")).default;
 
     // Create PDF directly without html2canvas
-    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pdf = new jsPDF("p", "mm", "a4");
 
     // Helper function to format currency
-    const formatCurrency = (amount: number) => `₹ ${amount.toLocaleString('en-IN')}`;
+    const formatCurrency = (amount: number) =>
+      `${amount.toLocaleString("en-IN", {
+        minimumFractionDigits: 2, // To show decimals
+        maximumFractionDigits: 2,
+      })}`;
 
     // Set font
-    pdf.setFont('helvetica');
+    pdf.setFont("helvetica");
 
-    // Header Section with cream/beige background
-    // pdf.setFillColor(245, 242, 230); // Cream/beige color
-    // pdf.rect(0, 0, 210, 50, 'F'); // Full width header background
-
-    // Left side - Load and add logo from public folder
+    // --- Start of Header Code ---
     try {
-      // Load logo from public folder
-      const logoResponse = await fetch('/logo.png');
+      const logoResponse = await fetch("/logo.png");
       const logoBlob = await logoResponse.blob();
-
-      // Convert to base64
       const logoBase64 = await new Promise<string>((resolve) => {
         const reader = new FileReader();
         reader.onload = () => resolve(reader.result as string);
         reader.readAsDataURL(logoBlob);
       });
-
-      // Add logo to PDF
-      pdf.addImage(logoBase64, 'PNG', 20, 10, 25, 25); // x, y, width, height
-
+      pdf.addImage(logoBase64, "PNG", 20, 13, 25, 17);
     } catch (error) {
-      // Fallback to styled text if logo fails to load
-      console.warn('Logo failed to load, using text fallback:', error);
+      console.warn("Logo failed to load, using text fallback:", error);
       pdf.setFontSize(18);
-      pdf.setTextColor(220, 20, 60); // Red color for TAX
-      pdf.text('Tax', 20, 25);
-
-      pdf.setTextColor(0, 0, 0); // Black color for legit
-      pdf.text('legit', 38, 25);
+      pdf.setTextColor(220, 20, 60);
+      pdf.text("Tax", 20, 25);
+      pdf.setTextColor(0, 0, 0);
+      pdf.text("legit", 38, 25);
     }
 
-    // Company details next to logo (header left side)
     pdf.setFontSize(10);
+    pdf.setFont("helvetica", "bold");
     pdf.setTextColor(0, 0, 0);
-    pdf.text('Taxlegit Consulting Private Limited', 45, 12);
-    
-    pdf.setFontSize(6);
+    pdf.text("Taxlegit Consulting Private Limited", 45, 15);
+
+    pdf.setFontSize(7.5);
+    pdf.setFont("helvetica", "normal");
     pdf.setTextColor(80, 80, 80);
+
     const companyDetails = [
-      '1117, Astralis,',
-      'Plot No.94, Sector-94',
-      'Noida, Uttar Pradesh-201301',
-      'INDIA',
-      'CIN: U74999UP2018PTC116737',
-      'GST: 09AAJCT8691F1ZN',
-      'Email: accounts@gmail.com'
+      "1117, Astralis, Plot No.94, Sector-94 Noida",
+      "Uttar Pradesh-201301 INDIA",
+      "GST: 09AAJCT8691F1ZN",
     ];
-
     companyDetails.forEach((line, index) => {
-      pdf.text(line, 45, 16 + (index * 3));
+      pdf.text(line, 45, 20 + index * 4);
     });
+    // --- End of Header Code ---
 
-    // Right side - Bill To section (header right side)
-    pdf.setFontSize(10);
-    pdf.setTextColor(0, 0, 0);
-
-    // Current date
-    const currentDate = new Date().toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    });
-
-    const rightX = 185;
-    let rightY = 15;
-
-    // Date (right aligned)
-    const dateText = `Date: ${currentDate}`;
-    const dateWidth = pdf.getTextWidth(dateText);
-    pdf.text(dateText, rightX - dateWidth, rightY);
-
-    
-
-    // Bill To section
-    rightY += 8;
+    // --- START: Updated Bill To Section ---
     pdf.setFontSize(9);
+    pdf.setTextColor(80, 80, 80);
+    pdf.text("Bill To:", 20, 48);
     pdf.setTextColor(0, 0, 0);
-    const billToWidth = pdf.getTextWidth('Bill To:');
-    pdf.text('Bill To:', rightX - billToWidth, rightY);
-
-    // Customer details (if available)
     if (customer) {
-      rightY += 5;
-      const customerText = `${customer.fullName}`;
-      const customerWidth = pdf.getTextWidth(customerText);
-      pdf.text(customerText, rightX - customerWidth, rightY);
+      pdf.text(`Name: ${customer.fullName}`, 20, 52);
+      pdf.text(`contact: ${customer.contactNumber}`, 20, 56);
 
-      rightY += 4;
-      const contactText = `${customer.contactNumber}`;
-      const contactWidth = pdf.getTextWidth(contactText);
-      pdf.text(contactText, rightX - contactWidth, rightY);
+      const currentDate = new Date()
+        .toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        })
+        .replace(/\//g, "-");
+      const dateTextFormatted = `Date: ${currentDate}`;
+      pdf.text(dateTextFormatted, 20, 60);
     }
+    // --- END: Updated Bill To Section ---
 
-    // Document title
-    pdf.setFontSize(20);
-    pdf.setTextColor(102, 51, 153); // Purple color
-    pdf.text('Quotation', 20, 60); // y-position reduced from 70 to 55
+    pdf.setFontSize(22);
+    pdf.setTextColor(59, 130, 246);
+    pdf.text("Quotation", 20, 72);
 
-    // Company Info Section
     pdf.setFontSize(11);
     pdf.setTextColor(0, 0, 0);
-    let yPos = 70;
-    
-    pdf.text(`Company Type: ${invoice.companyType}`, 20, yPos);
-    
-    // Right align state
+    let yPos = 80;
+    pdf.text(`Company Registration Type: ${invoice.companyType}`, 20, yPos);
     const stateText = `State: ${invoice.state.name}`;
-    const stateWidth = pdf.getTextWidth(stateText);
-    pdf.text(stateText, 185 - stateWidth, yPos);
+    pdf.text(stateText, 190 - pdf.getTextWidth(stateText), yPos - 2);
+    yPos += 5;
 
-    // Divider line
-    yPos += 10;
-    pdf.setLineWidth(0.5);
-    pdf.setDrawColor(200, 200, 200);
-    pdf.line(20, yPos, 190, yPos);
+    // --- TABLE 1: Main Services ---
+    const mainFees = [
+      { label: "2 x DSC Fees", amount: invoice.baseFees.dsc },
+      { label: "RUN + PANTAN", amount: invoice.baseFees.runPanTan },
+      { label: "Professional Fees", amount: invoice.baseFees.professionalFee },
+      {
+        label: `State Govt. Fee (${invoice.state.name})`,
+        amount: invoice.state.fee,
+      },
+    ];
 
-    // Fee Breakdown Section
-    yPos += 15;
-    pdf.setFontSize(14);
+    const tableLeftX = 20;
+    const tableWidth = 170;
+    const tableRightX = tableLeftX + tableWidth;
+    const col1Width = 20;
+    const col2Width = 110;
+
+    const table1StartY = yPos;
+    pdf.setFontSize(10);
+    pdf.setFont("helvetica", "bold");
     pdf.setTextColor(0, 0, 0);
-    pdf.text('Fee Breakdown', 20, yPos);
 
-    yPos += 15;
-    pdf.setFontSize(10);
+    yPos += 8;
+    pdf.text("Sr. No.", tableLeftX + 10, yPos, { align: "center" });
+    pdf.text("Services", tableLeftX + col1Width + 2, yPos);
+    pdf.text("Amount", tableRightX - 2, yPos - 3, { align: "right" });
+    yPos += 4;
+    pdf.setLineWidth(0.3);
+    pdf.line(tableLeftX, yPos, tableRightX, yPos);
 
-    // Base fees with better alignment
-    const fees = [
-      { label: '2 x DSC Fees', amount: invoice.baseFees.dsc },
-      { label: 'RUN + PAN/TAN', amount: invoice.baseFees.runPanTan },
-      { label: 'Professional Fees', amount: invoice.baseFees.professionalFee },
-      { label: `State Govt Fee (${invoice.state.name})`, amount: invoice.state.fee }
-    ];
-
-    fees.forEach((fee) => {
-      pdf.text(fee.label, 20, yPos);
-      const amountText = formatCurrency(fee.amount);
-      const amountWidth = pdf.getTextWidth(amountText);
-      pdf.text(amountText, 185 - amountWidth, yPos);
-      yPos += 8;
+    yPos += 6;
+    pdf.setFont("helvetica", "normal");
+    let mainFeesTotal = 0;
+    mainFees.forEach((item, index) => {
+      mainFeesTotal += item.amount;
+      pdf.text(`${index + 1}`, tableLeftX + 10, yPos, { align: "center" });
+      pdf.text(item.label, tableLeftX + col1Width + 2, yPos + 2);
+      const amountText = item.amount.toLocaleString("en-IN");
+      pdf.text(amountText, tableRightX - 2, yPos + 2, { align: "right" });
+      yPos += 7;
     });
 
-    // Add-ons section
+    pdf.setLineWidth(0.3);
+    pdf.line(tableLeftX, yPos - 3, tableRightX, yPos - 3);
+    pdf.setFont("helvetica", "bold");
+    pdf.text("Total", tableLeftX + col1Width + 2, yPos + 2);
+    pdf.text(mainFeesTotal.toLocaleString("en-IN"), tableRightX - 2, yPos + 2, {
+      align: "right",
+    });
+    yPos += 7;
+
+    const table1EndY = yPos - 3;
+    pdf.rect(tableLeftX, table1StartY, tableWidth, table1EndY - table1StartY);
+    pdf.line(
+      tableLeftX + col1Width,
+      table1StartY,
+      tableLeftX + col1Width,
+      table1EndY
+    );
+    pdf.line(
+      tableLeftX + col1Width + col2Width,
+      table1StartY,
+      tableLeftX + col1Width + col2Width,
+      table1EndY
+    );
+
+    // --- TABLE 2: Add-ons ---
     if (invoice.addOns.length > 0) {
-      yPos += 8;
-      pdf.setFontSize(12);
-      pdf.text('Add-ons:', 20, yPos);
-      yPos += 10;
-
+      yPos += 5;
       pdf.setFontSize(10);
-      invoice.addOns.forEach((addon) => {
-        pdf.text(addon.name, 30, yPos);
-        const addonAmountText = formatCurrency(addon.price);
-        const addonAmountWidth = pdf.getTextWidth(addonAmountText);
-        pdf.text(addonAmountText, 185 - addonAmountWidth, yPos);
-        yPos += 8;
+      pdf.setTextColor(80, 80, 80);
+      pdf.text("Add-ons:", 20, yPos);
+      yPos += 5;
+
+      const table2StartY = yPos;
+      pdf.setFontSize(10);
+      pdf.setFont("helvetica", "bold");
+      pdf.setTextColor(0, 0, 0);
+
+      yPos += 8;
+      pdf.text("Sr. No.", tableLeftX + 10, yPos, { align: "center" });
+      pdf.text("Services", tableLeftX + col1Width + 2, yPos);
+      pdf.text("Amount ", tableRightX - 2, yPos - 3, { align: "right" });
+      yPos += 4;
+      pdf.setLineWidth(0.3);
+      pdf.line(tableLeftX, yPos, tableRightX, yPos);
+
+      yPos += 6;
+      pdf.setFont("helvetica", "normal");
+      let addOnsTotal = 0;
+      invoice.addOns.forEach((addon, index) => {
+        addOnsTotal += addon.price;
+        pdf.text(`${index + 1}`, tableLeftX + 10, yPos, { align: "center" });
+        pdf.text(addon.name, tableLeftX + col1Width + 2, yPos + 2);
+        const addonAmountText = addon.price.toLocaleString("en-IN");
+        pdf.text(addonAmountText, tableRightX - 2, yPos + 2, {
+          align: "right",
+        });
+        yPos += 7;
       });
+
+      pdf.setLineWidth(0.3);
+      pdf.line(tableLeftX, yPos - 3, tableRightX, yPos - 3);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("Total", tableLeftX + col1Width + 2, yPos + 2);
+      pdf.text(addOnsTotal.toLocaleString("en-IN"), tableRightX - 2, yPos + 2, {
+        align: "right",
+      });
+      yPos += 7;
+
+      const table2EndY = yPos - 3;
+      const addOnTableWidth = 170;
+      pdf.rect(
+        tableLeftX,
+        table2StartY,
+        addOnTableWidth,
+        table2EndY - table2StartY
+      );
+      pdf.line(
+        tableLeftX + col1Width,
+        table2StartY,
+        tableLeftX + col1Width,
+        table2EndY
+      );
+      pdf.line(
+        tableLeftX + col1Width + col2Width,
+        table2StartY,
+        tableLeftX + col1Width + col2Width,
+        table2EndY
+      );
     }
 
-    // Separator line before total
-    yPos += 10;
-    pdf.setLineWidth(1);
-    pdf.setDrawColor(150, 150, 150);
-    pdf.line(20, yPos, 190, yPos);
+    // --- START: Final Total Section (Aligned) ---
+    yPos += 5;
+    const totalBoxStartY = yPos;
 
-    // Total section
-    yPos += 15;
-    pdf.setFontSize(16);
-    pdf.setTextColor(59, 130, 246); // Blue color
-    pdf.text('Total Payable:', 20, yPos);
+    // Use the same column widths as the tables above for alignment
+    const totalCol1X = tableLeftX + col1Width;
+    const totalCol2X = tableLeftX + col1Width + col2Width;
+    const wordsColumnWidth = totalCol2X - totalCol1X - 6;
 
-    const totalText = formatCurrency(invoice.total);
+    const totalInWords = numberToWords(invoice.total);
+    const wrappedText = pdf.splitTextToSize(totalInWords, wordsColumnWidth);
 
-    if (invoice.discount && invoice.discount > 0 && invoice.subtotal) {
-      // Show subtotal with strikethrough
-      pdf.setFontSize(13);
-      pdf.setTextColor(220, 38, 38); // Red color
-      const subtotalText = formatCurrency(invoice.subtotal);
-      const subtotalWidth = pdf.getTextWidth(subtotalText);
-      const subtotalX = 185 - subtotalWidth;
-      pdf.text(subtotalText, subtotalX, yPos);
+    const dynamicBoxHeight = Math.max(15, wrappedText.length * 5 + 5);
 
-      // Draw strikethrough line
-      pdf.setDrawColor(220, 38, 38);
-      pdf.setLineWidth(0.8);
-      pdf.line(subtotalX, yPos - 2, subtotalX + subtotalWidth, yPos - 2);
+    pdf.setLineWidth(0.3);
+    pdf.rect(tableLeftX, totalBoxStartY, tableWidth, dynamicBoxHeight);
 
-      // Show discounted total next to subtotal
-      pdf.setFontSize(16);
-      pdf.setTextColor(59, 130, 246); // Blue color
-      const totalWidth = pdf.getTextWidth(totalText);
-      pdf.text(totalText, 185 - totalWidth, yPos + 10);
+    const contentY =
+      totalBoxStartY + dynamicBoxHeight / 2 - (wrappedText.length - 1) * 2.5;
+
+    pdf.setFontSize(10);
+    pdf.setFont("helvetica", "bold");
+    pdf.text("Total :", tableLeftX + 3, contentY);
+
+    pdf.setFont("helvetica", "normal");
+    pdf.text(wrappedText, totalCol1X + 3, contentY);
+
+    if (invoice.hasSpecialOffer && invoice.subtotal && invoice.discount) {
+      const originalText = formatCurrency(invoice.subtotal);
+      const discountedText = formatCurrency(invoice.total);
+      const discountedWidth = pdf.getTextWidth(discountedText);
+      const originalWidth = pdf.getTextWidth(originalText);
+      const spacing = 3;
+      const discountedX = tableRightX - 3;
+      const originalX = discountedX - discountedWidth - spacing;
+
+      pdf.setFont("helvetica", "normal");
+      pdf.setTextColor(255, 0, 0);
+      pdf.text(originalText, originalX - originalWidth, contentY, {
+        align: "left",
+      });
+
+      const lineY = contentY - 1.5;
+      pdf.setLineWidth(0.5);
+      pdf.line(originalX - originalWidth, lineY, originalX, lineY);
+
+      pdf.setFont("helvetica", "bold");
+      pdf.setTextColor(0, 0, 0);
+      pdf.text(discountedText, discountedX, contentY, { align: "right" });
     } else {
-      // No discount, show only total
-      const totalWidth = pdf.getTextWidth(totalText);
-      pdf.text(totalText, 185 - totalWidth, yPos);
+      const totalText = formatCurrency(invoice.total);
+      pdf.setFont("helvetica", "bold");
+      pdf.setTextColor(0, 0, 0);
+      pdf.text(totalText, tableRightX - 3, contentY, { align: "right" });
     }
 
-    // Footer with red background
+    // Vertical line separators aligned with the tables
+    pdf.line(
+      totalCol1X,
+      totalBoxStartY,
+      totalCol1X,
+      totalBoxStartY + dynamicBoxHeight
+    );
+    pdf.line(
+      totalCol2X,
+      totalBoxStartY,
+      totalCol2X,
+      totalBoxStartY + dynamicBoxHeight
+    );
+    // --- END: Final Total Section ---
+
     const footerY = 240;
-pdf.setFillColor(240, 240, 240); // Very light gray
-pdf.rect(0, footerY + 19, 210, 50, 'F'); 
+    pdf.setFillColor(248, 249, 250);
+    pdf.rect(0, footerY, 210, 57, "F");
 
-    // Footer content in white text
-pdf.setTextColor(0, 0, 0); // Black text
+    pdf.setTextColor(0, 0, 0);
+    let footerLeftY = footerY + 10;
     pdf.setFontSize(10);
-    
-    let footerLeftY = footerY + 25;
-    
-    // Left side - Terms & Conditions and Payment Details
-    pdf.setFontSize(11);
-    pdf.text('Thank you for choosing our services! ', 20, footerLeftY);
-    
+    pdf.text("Thank you for choosing our services!", 20, footerLeftY);
+
     footerLeftY += 8;
-    pdf.setFontSize(10);
-    pdf.text('Payment Details', 20, footerLeftY);
-    
+    pdf.setFontSize(9);
+    pdf.text("Payment Details", 20, footerLeftY);
     footerLeftY += 5;
-    pdf.setFontSize(9);
+    pdf.setFontSize(8);
     const paymentDetails = [
-      'Name: Taxlegit Consulting Private Limited',
-      'Account No. : 778005500100',
-      'IFSC : ICIC0007780',
-      'Bank: ICICI Bank, Sector-45 Noida'
+      "Name: Taxlegit Consulting Private Limited",
+      "Account No. : 778005500100",
+      "IFSC : ICIC0007780",
+      "Bank: ICICI Bank, Sector-45 Noida",
     ];
+    paymentDetails.forEach((detail, index) =>
+      pdf.text(detail, 20, footerLeftY + index * 4.5)
+    );
 
-    paymentDetails.forEach((detail, index) => {
-      pdf.text(detail, 20, footerLeftY + (index * 4));
-    });
-
-    // Right side - Thank you message and contact details
-    let footerRightY = footerY + 25;
-    pdf.setFontSize(11);
-    pdf.text('Contact Details', 150, footerRightY);
-    
-    footerRightY += 8;
+    let footerRightY = footerY + 10;
     pdf.setFontSize(9);
+    pdf.text("Contact Details", 150, footerRightY);
+    footerRightY += 8;
+    pdf.setFontSize(8);
     const contactDetails = [
-      'Phone: +91 98765 43210',
-      'WhatsApp: +91 93040 15295',
-      'Email: support@taxlegit.com',
-      'Website: www.taxlegit.com',
+      "Phone: +91 85957 66812",
+      "WhatsApp: +91 88104 45899",
+      "Email: 121@taxlegit.com",
+      "Website: www.taxlegit.com & ",
+      "www.ngoexperts.com",
     ];
+    contactDetails.forEach((contact, index) =>
+      pdf.text(contact, 150, footerRightY + index * 4.5)
+    );
 
-    contactDetails.forEach((contact, index) => {
-      if (contact) { // Skip empty lines
-        pdf.text(contact, 150, footerRightY + (index * 4));
-      }
-    });
-
-    // Download the PDF
     pdf.save(`Quotation-${invoice.companyType}-${invoice.state.name}.pdf`);
-    
+
     return true;
   } catch (error) {
-    console.error('Error generating PDF:', error);
-    throw new Error('Failed to generate PDF');
+    console.error("Error generating PDF:", error);
+    throw new Error("Failed to generate PDF");
   }
 };
