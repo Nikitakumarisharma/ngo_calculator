@@ -242,7 +242,7 @@ export default function InvoiceForm({ onInvoiceChange }: InvoiceFormProps) {
           <div className="flex items-center gap-2 mb-2">
             <FaUsers className="text-green-500" />
             <label className="text-base font-semibold text-gray-700">
-              Number of Persons
+              Number of Directors
             </label>
           </div>
           <div className="flex items-center gap-3">
@@ -265,7 +265,7 @@ export default function InvoiceForm({ onInvoiceChange }: InvoiceFormProps) {
             </button>
           </div>
           <p className="text-xs text-gray-500 mt-1">
-            Min: 2, Max: 15 persons
+            Min: 2, Max: 15 Directors
           </p>
         </div>
 

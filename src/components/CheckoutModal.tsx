@@ -160,7 +160,7 @@ export default function CheckoutModal({
                 <span className="font-medium">{invoice.state.name}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Number of Persons:</span>
+                <span className="text-gray-600">Number of Directors:</span>
                 <span className="font-medium">{personCount}</span>
               </div>
 

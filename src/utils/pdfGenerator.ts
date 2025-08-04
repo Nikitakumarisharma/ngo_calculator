@@ -137,11 +137,11 @@ export const generateInvoicePDF = async (
     // --- START: Updated Bill To Section ---
     pdf.setFontSize(9);
     pdf.setTextColor(80, 80, 80);
-    pdf.text("Bill To:", 20, 48);
+    pdf.text("Bill To:", 20, 43);
     pdf.setTextColor(0, 0, 0);
     if (customer) {
-      pdf.text(`Name: ${customer.fullName}`, 20, 52);
-      pdf.text(`contact: ${customer.contactNumber}`, 20, 56);
+      pdf.text(`Name: ${customer.fullName}`, 20, 47);
+      pdf.text(`contact: ${customer.contactNumber}`, 20, 51);
 
       const currentDate = new Date()
         .toLocaleDateString("en-GB", {
@@ -151,20 +151,20 @@ export const generateInvoicePDF = async (
         })
         .replace(/\//g, "-");
       const dateTextFormatted = `Date: ${currentDate}`;
-      pdf.text(dateTextFormatted, 20, 60);
+      pdf.text(dateTextFormatted, 20, 50);
     }
     // --- END: Updated Bill To Section ---
 
     pdf.setFontSize(22);
     pdf.setTextColor(59, 130, 246);
-    pdf.text("Quotation", 20, 72);
+    pdf.text("Quotation", 20, 67);
 
     pdf.setFontSize(11);
     pdf.setTextColor(0, 0, 0);
-    let yPos = 80;
+    let yPos = 75;
     pdf.text(`Company Registration Type: ${invoice.companyType}`, 20, yPos);
     const stateText = `State: ${invoice.state.name}`;
-    pdf.text(stateText, 190 - pdf.getTextWidth(stateText), yPos - 2);
+    pdf.text(stateText, 190 - pdf.getTextWidth(stateText), yPos);
     yPos += 5;
 
     // Calculate additional fees based on person count
@@ -392,6 +392,13 @@ export const generateInvoicePDF = async (
       totalCol2X,
       totalBoxStartY + dynamicBoxHeight
     );
+
+    pdf.setTextColor(0, 0, 0); // Set text color to black
+pdf.setFontSize(10); // Optional: set font size
+
+// Adjust the X and Y as needed based on your layout
+pdf.text("All Government fee and GST charges are excluded", 20, totalBoxStartY + dynamicBoxHeight + 10);
+
     // --- END: Final Total Section ---
 
     const footerY = 240;
