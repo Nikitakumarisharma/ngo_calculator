@@ -16,6 +16,7 @@ interface CheckoutModalProps {
   onClose: () => void;
   invoice: InvoiceData;
   mode?: "checkout" | "download"; // New prop to differentiate between modes
+  personCount?: number; // Add person count prop
 }
 
 export default function CheckoutModal({
@@ -23,6 +24,7 @@ export default function CheckoutModal({
   onClose,
   invoice,
   mode = "checkout",
+  personCount = 2,
 }: CheckoutModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -97,9 +99,9 @@ export default function CheckoutModal({
           );
         }
 
-        // 3. Generate and download PDF
+        // 3. Generate and download PDF with person count
         const { generateInvoicePDF } = await import("../utils/pdfGenerator");
-        await generateInvoicePDF(invoice, data);
+        await generateInvoicePDF(invoice, data, personCount);
 
         // Close modal and reset form
         onClose();
@@ -156,6 +158,10 @@ export default function CheckoutModal({
               <div className="flex justify-between">
                 <span className="text-gray-600">State:</span>
                 <span className="font-medium">{invoice.state.name}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Number of Persons:</span>
+                <span className="font-medium">{personCount}</span>
               </div>
 
               {/* <div className="flex justify-between border-t pt-2">

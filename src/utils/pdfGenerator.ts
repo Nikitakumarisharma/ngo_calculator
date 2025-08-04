@@ -76,7 +76,8 @@ function numberToWords(num: number): string {
 
 export const generateInvoicePDF = async (
   invoice: InvoiceData,
-  customer?: CustomerInfo
+  customer?: CustomerInfo,
+  personCount: number = 2
 ) => {
   try {
     // Dynamic import to avoid SSR issues
@@ -166,9 +167,26 @@ export const generateInvoicePDF = async (
     pdf.text(stateText, 190 - pdf.getTextWidth(stateText), yPos - 2);
     yPos += 5;
 
+    // Calculate additional fees based on person count
+    let additionalDscFee = 0;
+    let additionalDinFee = 0;
+    
+    if (personCount > 2) {
+      // DSC logic: After 2 persons, add ₹2360 for each additional person
+      additionalDscFee = (personCount - 2) * 2360;
+    }
+    
+    if (personCount > 3) {
+      // DIN logic: After 3 persons, add ₹1180 for each additional person
+      additionalDinFee = (personCount - 3) * 1180;
+    }
+
     // --- TABLE 1: Main Services ---
     const mainFees = [
-      { label: "2 x DSC Fees", amount: invoice.baseFees.dsc },
+      { 
+        label: `${personCount} x DSC Fees`, 
+        amount: invoice.baseFees.dsc + additionalDscFee 
+      },
       { label: "RUN + PANTAN", amount: invoice.baseFees.runPanTan },
       { label: "Professional Fees", amount: invoice.baseFees.professionalFee },
       {
@@ -176,6 +194,13 @@ export const generateInvoicePDF = async (
         amount: invoice.state.fee,
       },
     ];
+
+    // Always add DIN item, but with 0 price for 2-3 persons
+    const dinLabel = personCount <= 3 ? `${personCount} x DIN Fees` : `${personCount - 3} x DIN Fees`;
+    mainFees.push({
+      label: dinLabel,
+      amount: additionalDinFee, // This will be 0 for 2-3 persons
+    });
 
     const tableLeftX = 20;
     const tableWidth = 170;

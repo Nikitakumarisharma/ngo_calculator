@@ -8,6 +8,7 @@ import {
   FaMapMarkerAlt,
   FaPlus,
   FaFileInvoice,
+  FaUsers,
 } from "react-icons/fa";
 import {
   CompanyType,
@@ -22,7 +23,8 @@ import {
 interface InvoiceFormProps {
   onInvoiceChange: (
     invoice: InvoiceData,
-    hasUserSelections?: { companyType: boolean; state: boolean }
+    hasUserSelections?: { companyType: boolean; state: boolean },
+    personCount?: number
   ) => void;
 }
 
@@ -31,6 +33,7 @@ export default function InvoiceForm({ onInvoiceChange }: InvoiceFormProps) {
   // Initialize states with empty strings to allow for placeholders
   const [companyType, setCompanyType] = useState<CompanyType | "">("");
   const [selectedStateName, setSelectedStateName] = useState<string>("");
+  const [personCount, setPersonCount] = useState<number>(2); // Counter starts at 2
   const [addOns, setAddOns] = useState<AddOn[]>(
     AVAILABLE_ADDONS.map((addon) => ({ ...addon, selected: false }))
   );
@@ -50,12 +53,29 @@ export default function InvoiceForm({ onInvoiceChange }: InvoiceFormProps) {
 
     const baseFees = BASE_FEES_BY_TYPE[companyType];
     const stateFee = selectedState.fees[companyType];
+    
+    // Calculate additional fees based on person count
+    let additionalDscFee = 0;
+    let additionalDinFee = 0;
+    
+    if (personCount > 2) {
+      // DSC logic: After 2 persons, add ₹2360 for each additional person
+      additionalDscFee = (personCount - 2) * 2360;
+    }
+    
+    if (personCount > 3) {
+      // DIN logic: After 3 persons, add ₹1180 for each additional person
+      additionalDinFee = (personCount - 3) * 1180;
+    }
+    
     const subtotal =
       baseFees.dsc +
+      additionalDscFee +
       baseFees.runPanTan +
       baseFees.professionalFee +
       stateFee +
-      addOnTotal;
+      addOnTotal +
+      additionalDinFee;
 
     // --- SPECIAL OFFER LOGIC ---
     const offerAddons = ["trademark", "iso", "startup-india", "iec"];
@@ -83,12 +103,12 @@ export default function InvoiceForm({ onInvoiceChange }: InvoiceFormProps) {
 
     // Track if user has made selections (not empty strings)
     const hasUserSelections = {
-      companyType: companyType !== "",
+      companyType: companyType !== "" as CompanyType,
       state: selectedStateName !== "",
     };
 
-    onInvoiceChange(invoiceData, hasUserSelections);
-  }, [companyType, selectedStateName, addOns, onInvoiceChange]);
+    onInvoiceChange(invoiceData, hasUserSelections, personCount);
+  }, [companyType, selectedStateName, personCount, addOns, onInvoiceChange]);
 
   // --- HANDLERS ---
   const handleAddOnToggle = (addonId: string) => {
@@ -97,6 +117,12 @@ export default function InvoiceForm({ onInvoiceChange }: InvoiceFormProps) {
         addon.id === addonId ? { ...addon, selected: !addon.selected } : addon
       )
     );
+  };
+
+  const handlePersonCountChange = (newCount: number) => {
+    if (newCount >= 2 && newCount <= 15) {
+      setPersonCount(newCount);
+    }
   };
 
   // --- JSX / RENDER ---
@@ -209,16 +235,56 @@ export default function InvoiceForm({ onInvoiceChange }: InvoiceFormProps) {
         </div>
       </div>
 
-      {/* Special Offer Banner */}
-      <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-        <div className="text-center">
-          <p className="text-blue-700 font-medium text-sm mb-1">
-            🎯 Select 4 services — Trademark, ISO, Startup India, IEC — and get
-            ₹2,000 OFF instantly!
+      {/* Person Counter and Offer in same row */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        {/* Person Counter */}
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <FaUsers className="text-green-500" />
+            <label className="text-base font-semibold text-gray-700">
+              Number of Persons
+            </label>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => handlePersonCountChange(personCount - 1)}
+              disabled={personCount <= 2}
+              className="w-10 h-10 rounded-full bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-gray-600 font-bold"
+            >
+              -
+            </button>
+            <span className="text-lg font-semibold text-gray-700 min-w-[3rem] text-center">
+              {personCount}
+            </span>
+            <button
+              onClick={() => handlePersonCountChange(personCount + 1)}
+              disabled={personCount >= 15}
+              className="w-10 h-10 rounded-full bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-gray-600 font-bold"
+            >
+              +
+            </button>
+          </div>
+          <p className="text-xs text-gray-500 mt-1">
+            Min: 2, Max: 15 persons
           </p>
-          <p className="text-blue-600 text-xs">
-            ⏰ Applicable for today - until 12 AM tonight
-          </p>
+        </div>
+
+        {/* Empty space for middle column */}
+        <div></div>
+
+        {/* Offer section */}
+        <div>
+          <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="text-center">
+              <p className="text-blue-700 font-medium text-sm mb-1">
+                🎯 Select 4 services — Trademark, ISO, Startup India, IEC — and get
+                ₹2,000 OFF instantly!
+              </p>
+              <p className="text-blue-600 text-xs">
+                ⏰ Applicable for today - until 12 AM tonight
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

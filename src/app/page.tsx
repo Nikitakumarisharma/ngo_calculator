@@ -26,6 +26,8 @@ export default function Home() {
       STATES[5].fees[defaultCompanyType],
   });
 
+  const [personCount, setPersonCount] = useState<number>(2);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"checkout" | "download">(
     "checkout"
@@ -38,13 +40,17 @@ export default function Home() {
   const handleInvoiceChange = useCallback(
     (
       newInvoice: InvoiceData,
-      hasUserSelections?: { companyType: boolean; state: boolean }
+      hasUserSelections?: { companyType: boolean; state: boolean },
+      newPersonCount?: number
     ) => {
       setInvoice((prev) => {
         if (JSON.stringify(prev) !== JSON.stringify(newInvoice)) {
           if (hasUserSelections) {
             setUserHasSelectedCompanyType(hasUserSelections.companyType);
             setUserHasSelectedState(hasUserSelections.state);
+          }
+          if (newPersonCount !== undefined) {
+            setPersonCount(newPersonCount);
           }
           return newInvoice;
         }
@@ -122,6 +128,7 @@ export default function Home() {
           onClose={handleCloseModal}
           invoice={invoice}
           mode={modalMode}
+          personCount={personCount}
         />
       </div>
     </div>
