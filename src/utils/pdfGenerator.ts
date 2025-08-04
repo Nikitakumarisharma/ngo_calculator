@@ -397,7 +397,7 @@ export const generateInvoicePDF = async (
 pdf.setFontSize(10); // Optional: set font size
 
 // Adjust the X and Y as needed based on your layout
-pdf.text("All Government fee and GST charges are excluded", 20, totalBoxStartY + dynamicBoxHeight + 10);
+pdf.text("All Government fee and GST charges are excluded.", 20, totalBoxStartY + dynamicBoxHeight + 10);
 
     // --- END: Final Total Section ---
 

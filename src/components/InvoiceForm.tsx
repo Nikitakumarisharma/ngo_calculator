@@ -276,12 +276,16 @@ export default function InvoiceForm({ onInvoiceChange }: InvoiceFormProps) {
         <div>
           <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
             <div className="text-center">
-              <p className="text-blue-700 font-medium text-sm mb-1">
-                🎯 Select 4 services — Trademark, ISO, Startup India, IEC — and get
-                ₹2,000 OFF instantly!
+              <p className="text-blue-700 font-medium text-sm mb-1 font ">
+             
+              <span className="font-bold"> Grab <span className="text-red-700">₹2,000</span> OFF instantly! </span>
+              Pick Trademark, ISO, Startup India & IEC together
+
+
+
               </p>
-              <p className="text-blue-600 text-xs">
-                ⏰ Applicable for today - until 12 AM tonight
+              <p className="text-gray-700 text-xs">
+              ⏰ Offer valid today only — until 12 AM!
               </p>
             </div>
           </div>
