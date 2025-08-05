@@ -46,6 +46,9 @@ export default function CheckoutModal({
   const watchedValues = watch();
   const isFormValid = watchedValues.fullName && watchedValues.contactNumber;
 
+  // Check if current service is Section 8 Company
+  const isSection8Company = invoice.serviceType === "Section 8 Company";
+
   const onSubmit = async (data: CustomerInfo) => {
     setIsSubmitting(true);
     setError("");
@@ -56,7 +59,7 @@ export default function CheckoutModal({
         const zohoFormData = new FormData();
         zohoFormData.append("Name", data.fullName);
         zohoFormData.append("PhoneNumber", data.contactNumber);
-        zohoFormData.append("Company_Type", invoice.companyType);
+        zohoFormData.append("Service_Type", invoice.serviceType);
         zohoFormData.append("State", invoice.state.name);
         zohoFormData.append("Total_Amount", invoice.total.toString());
         zohoFormData.append(
@@ -152,17 +155,21 @@ export default function CheckoutModal({
             </h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-600">Company Type:</span>
-                <span className="font-medium">{invoice.companyType}</span>
+                <span className="text-gray-600">Service Type:</span>
+                <span className="font-medium">{invoice.serviceType}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">State:</span>
-                <span className="font-medium">{invoice.state.name}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Number of Directors:</span>
-                <span className="font-medium">{personCount}</span>
-              </div>
+              {isSection8Company && (
+                <>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">State:</span>
+                    <span className="font-medium">{invoice.state.name}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Number of Directors:</span>
+                    <span className="font-medium">{personCount}</span>
+                  </div>
+                </>
+              )}
 
               {/* <div className="flex justify-between border-t pt-2">
                 <span className="text-gray-800 font-semibold">

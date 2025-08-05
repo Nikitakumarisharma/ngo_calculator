@@ -96,6 +96,9 @@ export const generateInvoicePDF = async (
     // Set font
     pdf.setFont("helvetica");
 
+    // Check if current service is Section 8 Company
+    const isSection8Company = invoice.serviceType === "Section 8 Company";
+
     // --- Start of Header Code ---
     try {
       const logoResponse = await fetch("/logo.png");
@@ -151,7 +154,7 @@ export const generateInvoicePDF = async (
         })
         .replace(/\//g, "-");
       const dateTextFormatted = `Date: ${currentDate}`;
-      pdf.text(dateTextFormatted, 20, 50);
+      pdf.text(dateTextFormatted, 20, 55);
     }
     // --- END: Updated Bill To Section ---
 
@@ -162,45 +165,68 @@ export const generateInvoicePDF = async (
     pdf.setFontSize(11);
     pdf.setTextColor(0, 0, 0);
     let yPos = 75;
-    pdf.text(`Company Registration Type: ${invoice.companyType}`, 20, yPos);
-    const stateText = `State: ${invoice.state.name}`;
-    pdf.text(stateText, 190 - pdf.getTextWidth(stateText), yPos);
+    pdf.text(`Service Type: ${invoice.serviceType}`, 20, yPos);
+
+    if (isSection8Company) {
+      const stateText = `State: ${invoice.state.name}`;
+      pdf.text(stateText, 190 - pdf.getTextWidth(stateText), yPos);
+    }
     yPos += 5;
 
-    // Calculate additional fees based on person count
-    let additionalDscFee = 0;
-    let additionalDinFee = 0;
-    
-    if (personCount > 2) {
-      // DSC logic: After 2 persons, add ₹2360 for each additional person
-      additionalDscFee = (personCount - 2) * 2360;
-    }
-    
-    if (personCount > 3) {
-      // DIN logic: After 3 persons, add ₹1180 for each additional person
-      additionalDinFee = (personCount - 3) * 1180;
-    }
-
     // --- TABLE 1: Main Services ---
-    const mainFees = [
-      { 
-        label: `${personCount} x DSC Fees`, 
-        amount: invoice.baseFees.dsc + additionalDscFee 
-      },
-      { label: "RUN + PANTAN", amount: invoice.baseFees.runPanTan },
-      { label: "Professional Fees", amount: invoice.baseFees.professionalFee },
-      {
-        label: `State Govt. Fee (${invoice.state.name})`,
-        amount: invoice.state.fee,
-      },
-    ];
+    let mainFees: { label: string; amount: number }[] = [];
 
-    // Always add DIN item, but with 0 price for 2-3 persons
-    const dinLabel = personCount <= 3 ? `${personCount} x DIN Fees` : `${personCount - 3} x DIN Fees`;
-    mainFees.push({
-      label: dinLabel,
-      amount: additionalDinFee, // This will be 0 for 2-3 persons
-    });
+    if (isSection8Company) {
+      // Section 8 Company logic with DSC, RUN PAN TAN, state fees, and person count
+      // Calculate additional fees based on person count
+      let additionalDscFee = 0;
+      let additionalDinFee = 0;
+
+      if (personCount > 2) {
+        // DSC logic: After 2 persons, add ₹2360 for each additional person
+        additionalDscFee = (personCount - 2) * 2360;
+      }
+
+      if (personCount > 3) {
+        // DIN logic: After 3 persons, add ₹1180 for each additional person
+        additionalDinFee = (personCount - 3) * 1180;
+      }
+
+      mainFees = [
+        {
+          label: `${personCount} x DSC Fees`,
+          amount: invoice.baseFees!.dsc + additionalDscFee,
+        },
+        { label: "RUN + PANTAN", amount: invoice.baseFees!.runPanTan },
+        {
+          label: "Professional Fees",
+          amount: invoice.baseFees!.professionalFee,
+        },
+        {
+          label: `State Govt. Fee (${invoice.state.name})`,
+          amount: invoice.state.fee,
+        },
+      ];
+
+      // Always add DIN item, but with 0 price for 2-3 persons
+      const dinLabel =
+        personCount <= 3
+          ? `${personCount} x DIN Fees`
+          : `${personCount - 3} x DIN Fees`;
+      mainFees.push({
+        label: dinLabel,
+        amount: additionalDinFee, // This will be 0 for 2-3 persons
+      });
+    } else {
+      // Other services logic - only service price and professional fee
+      mainFees = [
+        { label: "Service Fee", amount: invoice.serviceFees!.price },
+        {
+          label: "Professional Fees",
+          amount: invoice.serviceFees!.professionalFee,
+        },
+      ];
+    }
 
     const tableLeftX = 20;
     const tableWidth = 170;
@@ -216,7 +242,7 @@ export const generateInvoicePDF = async (
     yPos += 8;
     pdf.text("Sr. No.", tableLeftX + 10, yPos, { align: "center" });
     pdf.text("Services", tableLeftX + col1Width + 2, yPos);
-    pdf.text("Amount", tableRightX - 2, yPos - 3, { align: "right" });
+    pdf.text("Amount", tableRightX - 2, yPos, { align: "right" });
     yPos += 4;
     pdf.setLineWidth(0.3);
     pdf.line(tableLeftX, yPos, tableRightX, yPos);
@@ -227,9 +253,9 @@ export const generateInvoicePDF = async (
     mainFees.forEach((item, index) => {
       mainFeesTotal += item.amount;
       pdf.text(`${index + 1}`, tableLeftX + 10, yPos, { align: "center" });
-      pdf.text(item.label, tableLeftX + col1Width + 2, yPos + 2);
+      pdf.text(item.label, tableLeftX + col1Width + 2, yPos);
       const amountText = item.amount.toLocaleString("en-IN");
-      pdf.text(amountText, tableRightX - 2, yPos + 2, { align: "right" });
+      pdf.text(amountText, tableRightX - 2, yPos, { align: "right" });
       yPos += 7;
     });
 
@@ -273,7 +299,7 @@ export const generateInvoicePDF = async (
       yPos += 8;
       pdf.text("Sr. No.", tableLeftX + 10, yPos, { align: "center" });
       pdf.text("Services", tableLeftX + col1Width + 2, yPos);
-      pdf.text("Amount ", tableRightX - 2, yPos - 3, { align: "right" });
+      pdf.text("Amount ", tableRightX - 2, yPos, { align: "right" });
       yPos += 4;
       pdf.setLineWidth(0.3);
       pdf.line(tableLeftX, yPos, tableRightX, yPos);
@@ -284,9 +310,9 @@ export const generateInvoicePDF = async (
       invoice.addOns.forEach((addon, index) => {
         addOnsTotal += addon.price;
         pdf.text(`${index + 1}`, tableLeftX + 10, yPos, { align: "center" });
-        pdf.text(addon.name, tableLeftX + col1Width + 2, yPos + 2);
+        pdf.text(addon.name, tableLeftX + col1Width + 2, yPos);
         const addonAmountText = addon.price.toLocaleString("en-IN");
-        pdf.text(addonAmountText, tableRightX - 2, yPos + 2, {
+        pdf.text(addonAmountText, tableRightX - 2, yPos, {
           align: "right",
         });
         yPos += 7;
@@ -394,10 +420,14 @@ export const generateInvoicePDF = async (
     );
 
     pdf.setTextColor(0, 0, 0); // Set text color to black
-pdf.setFontSize(10); // Optional: set font size
+    pdf.setFontSize(10); // Optional: set font size
 
-// Adjust the X and Y as needed based on your layout
-pdf.text("All Government fee and GST charges are excluded.", 20, totalBoxStartY + dynamicBoxHeight + 10);
+    // Adjust the X and Y as needed based on your layout
+    pdf.text(
+      "All Government fee and GST charges are excluded.",
+      20,
+      totalBoxStartY + dynamicBoxHeight + 10
+    );
 
     // --- END: Final Total Section ---
 
@@ -441,7 +471,12 @@ pdf.text("All Government fee and GST charges are excluded.", 20, totalBoxStartY 
       pdf.text(contact, 150, footerRightY + index * 4.5)
     );
 
-    pdf.save(`Quotation-${invoice.companyType}-${invoice.state.name}.pdf`);
+    // Generate filename based on service type
+    const filename = isSection8Company
+      ? `Quotation-${invoice.serviceType}-${invoice.state.name}.pdf`
+      : `Quotation-${invoice.serviceType}.pdf`;
+
+    pdf.save(filename);
 
     return true;
   } catch (error) {

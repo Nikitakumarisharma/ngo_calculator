@@ -25,6 +25,9 @@ const createTransporter = () => {
 const generateInvoiceHTML = (invoice: InvoiceData, customer: CustomerInfo, mode: string = 'checkout') => {
   const formatCurrency = (amount: number) => `${amount.toLocaleString()}`;
   
+  // Check if current service is Section 8 Company
+  const isSection8Company = invoice.serviceType === "Section 8 Company";
+  
   return `
     <!DOCTYPE html>
     <html>
@@ -58,28 +61,39 @@ const generateInvoiceHTML = (invoice: InvoiceData, customer: CustomerInfo, mode:
           
           <div class="invoice-details">
             <h3>Invoice Details</h3>
-            <p><strong>Company Type:</strong> ${invoice.companyType}</p>
-            <p><strong>State:</strong> ${invoice.state.name}</p>
+            <p><strong>Service Type:</strong> ${invoice.serviceType}</p>
+            ${isSection8Company ? `<p><strong>State:</strong> ${invoice.state.name}</p>` : ''}
             
             <hr style="margin: 20px 0;">
             
             <h4>Fee Breakdown</h4>
-            <div class="fee-item">
-              <span>2 x DSC Fees</span>
-              <span>${formatCurrency(invoice.baseFees.dsc)}</span>
-            </div>
-            <div class="fee-item">
-              <span>RUN + PAN/TAN</span>
-              <span>${formatCurrency(invoice.baseFees.runPanTan)}</span>
-            </div>
-            <div class="fee-item">
-              <span>Professional Fees</span>
-              <span>${formatCurrency(invoice.baseFees.professionalFee)}</span>
-            </div>
-            <div class="fee-item">
-              <span>State Govt Fee (${invoice.state.name})</span>
-              <span>${formatCurrency(invoice.state.fee)}</span>
-            </div>
+            ${isSection8Company ? `
+              <div class="fee-item">
+                <span>2 x DSC Fees</span>
+                <span>${formatCurrency(invoice.baseFees!.dsc)}</span>
+              </div>
+              <div class="fee-item">
+                <span>RUN + PAN/TAN</span>
+                <span>${formatCurrency(invoice.baseFees!.runPanTan)}</span>
+              </div>
+              <div class="fee-item">
+                <span>Professional Fees</span>
+                <span>${formatCurrency(invoice.baseFees!.professionalFee)}</span>
+              </div>
+              <div class="fee-item">
+                <span>State Govt Fee (${invoice.state.name})</span>
+                <span>${formatCurrency(invoice.state.fee)}</span>
+              </div>
+            ` : `
+              <div class="fee-item">
+                <span>Service Fee</span>
+                <span>${formatCurrency(invoice.serviceFees!.price)}</span>
+              </div>
+              <div class="fee-item">
+                <span>Professional Fees</span>
+                <span>${formatCurrency(invoice.serviceFees!.professionalFee)}</span>
+              </div>
+            `}
             
             ${invoice.addOns.length > 0 ? `
               <h4 style="margin-top: 20px;">Add-ons</h4>
@@ -130,13 +144,16 @@ export async function POST(request: NextRequest) {
     // Generate HTML content
     const htmlContent = generateInvoiceHTML(invoice, customer, mode);
 
+    // Check if current service is Section 8 Company
+    const isSection8Company = invoice.serviceType === "Section 8 Company";
+
     // Email options
     const mailOptions = {
       from: process.env.EMAIL_USER || 'your-email@gmail.com',
       to: process.env.ADMIN_EMAIL || 'admin@yourcompany.com', // Your email to receive invoices
       subject: mode === 'download'
-        ? `PDF Download Request - ${customer.fullName} (${invoice.companyType} - ${invoice.state.name})`
-        : `New Invoice - ${customer.fullName} (${invoice.companyType} - ${invoice.state.name})`,
+        ? `PDF Download Request - ${customer.fullName} (${invoice.serviceType}${isSection8Company ? ` - ${invoice.state.name}` : ''})`
+        : `New Invoice - ${customer.fullName} (${invoice.serviceType}${isSection8Company ? ` - ${invoice.state.name}` : ''})`,
       html: htmlContent,
       replyTo: customer.contactNumber // You might want to add customer email field
     };

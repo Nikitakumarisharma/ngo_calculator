@@ -1,5 +1,3 @@
-// app/page.tsx or app/home.tsx
-
 "use client";
 
 import { useState, useCallback } from "react";
@@ -8,14 +6,14 @@ import CheckoutModal from "../components/CheckoutModal";
 import { InvoiceData, STATES, BASE_FEES_BY_TYPE } from "../types/invoice";
 
 export default function Home() {
-  const defaultCompanyType = "Private limited company";
-  const defaultBaseFees = BASE_FEES_BY_TYPE[defaultCompanyType];
+  const defaultServiceType = "Section 8 Company";
+  const defaultBaseFees = BASE_FEES_BY_TYPE[defaultServiceType];
 
   const [invoice, setInvoice] = useState<InvoiceData>({
-    companyType: defaultCompanyType,
+    serviceType: defaultServiceType,
     state: {
-      name: STATES[5].name, // Delhi
-      fee: STATES[5].fees[defaultCompanyType],
+      name: STATES[5].name, // Chandigarh
+      fee: STATES[5].fees[defaultServiceType],
     },
     addOns: [],
     baseFees: defaultBaseFees,
@@ -23,7 +21,7 @@ export default function Home() {
       defaultBaseFees.dsc +
       defaultBaseFees.runPanTan +
       defaultBaseFees.professionalFee +
-      STATES[5].fees[defaultCompanyType],
+      STATES[5].fees[defaultServiceType],
   });
 
   const [personCount, setPersonCount] = useState<number>(2);
@@ -33,21 +31,26 @@ export default function Home() {
     "checkout"
   );
 
-  const [userHasSelectedCompanyType, setUserHasSelectedCompanyType] =
+  const [userHasSelectedServiceType, setUserHasSelectedServiceType] =
     useState(false);
   const [userHasSelectedState, setUserHasSelectedState] = useState(false);
 
   const handleInvoiceChange = useCallback(
     (
       newInvoice: InvoiceData,
-      hasUserSelections?: { companyType: boolean; state: boolean },
+      hasUserSelections?: { serviceType: boolean; state: boolean },
       newPersonCount?: number
     ) => {
       setInvoice((prev) => {
         if (JSON.stringify(prev) !== JSON.stringify(newInvoice)) {
           if (hasUserSelections) {
-            setUserHasSelectedCompanyType(hasUserSelections.companyType);
-            setUserHasSelectedState(hasUserSelections.state);
+            setUserHasSelectedServiceType(hasUserSelections.serviceType);
+            // Only set state selection if it's Section 8 Company
+            if (newInvoice.serviceType === "Section 8 Company") {
+              setUserHasSelectedState(hasUserSelections.state);
+            } else {
+              setUserHasSelectedState(true); // For other services, state is not required
+            }
           }
           if (newPersonCount !== undefined) {
             setPersonCount(newPersonCount);
@@ -64,6 +67,25 @@ export default function Home() {
     setIsModalOpen(false);
   };
 
+  // Check if current service requires state selection
+  const isSection8Company = invoice.serviceType === "Section 8 Company";
+  const requiresStateSelection = isSection8Company;
+
+  // Validation function
+  const validateSelections = () => {
+    if (!userHasSelectedServiceType) {
+      alert("⚠️ Please select a Service Type before proceeding!");
+      return false;
+    }
+
+    if (requiresStateSelection && !userHasSelectedState) {
+      alert("⚠️ Please select a State before proceeding!");
+      return false;
+    }
+
+    return true;
+  };
+
   return (
     <div className="w-full bg-white py-4 lg:px-24 md:px-20 sm:px-2">
       <div className="w-full mx-auto">
@@ -77,10 +99,7 @@ export default function Home() {
             {/* Pay Now Button */}
             <button
               onClick={() => {
-                if (!userHasSelectedCompanyType || !userHasSelectedState) {
-                  alert(
-                    "⚠️ Please select both Company Type and State before proceeding to payment!"
-                  );
+                if (!validateSelections()) {
                   return;
                 }
                 alert("🚀 Payment gateway integration coming soon!");
@@ -107,10 +126,7 @@ export default function Home() {
             {/* Download Button */}
             <button
               onClick={() => {
-                if (!userHasSelectedCompanyType || !userHasSelectedState) {
-                  alert(
-                    "⚠️ Please select both Company Type and State before downloading your quotation!"
-                  );
+                if (!validateSelections()) {
                   return;
                 }
                 setModalMode("download");
