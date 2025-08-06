@@ -3,25 +3,21 @@
 import { useState, useCallback } from "react";
 import InvoiceForm from "../components/InvoiceForm";
 import CheckoutModal from "../components/CheckoutModal";
-import { InvoiceData, STATES, BASE_FEES_BY_TYPE } from "../types/invoice";
+import { InvoiceData } from "../types/invoice";
 
 export default function Home() {
-  const defaultServiceType = "Section 8 Company";
-  const defaultBaseFees = BASE_FEES_BY_TYPE[defaultServiceType];
-
   const [invoice, setInvoice] = useState<InvoiceData>({
-    serviceType: defaultServiceType,
+    serviceType: "" as unknown as import("../types/invoice").ServiceType,
     state: {
-      name: STATES[5].name, // Chandigarh
-      fee: STATES[5].fees[defaultServiceType],
+      name: "",
+      fee: 0,
     },
     addOns: [],
-    baseFees: defaultBaseFees,
-    total:
-      defaultBaseFees.dsc +
-      defaultBaseFees.runPanTan +
-      defaultBaseFees.professionalFee +
-      STATES[5].fees[defaultServiceType],
+    baseFees: undefined,
+    total: 0,
+    subtotal: 0,
+    discount: 0,
+    hasSpecialOffer: false,
   });
 
   const [personCount, setPersonCount] = useState<number>(2);
