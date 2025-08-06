@@ -19,6 +19,8 @@ import {
   SERVICE_TYPES,
 } from "../types/invoice";
 
+import MidnightCountdown from "@/components/counter";
+
 interface InvoiceFormProps {
   onInvoiceChange: (
     invoice: InvoiceData,
@@ -140,11 +142,13 @@ export default function InvoiceForm({ onInvoiceChange }: InvoiceFormProps) {
       // Check if user has selected the three special services (main service + add-ons)
       const specialServices = ["12a 80g registration", "ngo darpan", "csr-1"];
       // Normalize all selected service names to lower case and trim
-      const selectedServices = [serviceType, ...selectedAddOns.map((addon) => addon.name)]
-        .map(s => s.toLowerCase().trim());
+      const selectedServices = [
+        serviceType,
+        ...selectedAddOns.map((addon) => addon.name),
+      ].map((s) => s.toLowerCase().trim());
 
       // Check if all three special services are selected (case-insensitive)
-      const hasAllThreeServices = specialServices.every(specialService => 
+      const hasAllThreeServices = specialServices.every((specialService) =>
         selectedServices.includes(specialService)
       );
       hasSpecialOffer = hasAllThreeServices;
@@ -327,7 +331,8 @@ export default function InvoiceForm({ onInvoiceChange }: InvoiceFormProps) {
                 Select 12a 80g registration + NGO Darpan + CSR-1 together
               </p>
               <p className="text-gray-700 text-xs">
-                ⏰ Offer valid today only — until 12 AM!
+                Offer expires in &nbsp;
+                <MidnightCountdown />
               </p>
             </div>
           </div>
@@ -385,7 +390,7 @@ export default function InvoiceForm({ onInvoiceChange }: InvoiceFormProps) {
                   Pick Trademark, ISO, Startup India & IEC together
                 </p>
                 <p className="text-gray-700 text-xs">
-                  ⏰ Offer valid today only — until 12 AM!
+                  Offer expires in&nbsp; <MidnightCountdown />
                 </p>
               </div>
             </div>
