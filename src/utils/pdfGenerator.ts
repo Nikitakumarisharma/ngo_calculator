@@ -101,50 +101,49 @@ export const generateInvoicePDF = async (
 
     // --- Start of Header Code ---
     try {
-      const logoResponse = await fetch("/logo.png");
+      const logoResponse = await fetch("/ngo.png");
       const logoBlob = await logoResponse.blob();
       const logoBase64 = await new Promise<string>((resolve) => {
         const reader = new FileReader();
         reader.onload = () => resolve(reader.result as string);
         reader.readAsDataURL(logoBlob);
       });
-      pdf.addImage(logoBase64, "PNG", 20, 13, 25, 17);
+      pdf.addImage(logoBase64, "PNG", 20, 10, 40, 17);
     } catch (error) {
       console.warn("Logo failed to load, using text fallback:", error);
       pdf.setFontSize(18);
-      pdf.setTextColor(220, 20, 60);
-      pdf.text("Tax", 20, 25);
       pdf.setTextColor(0, 0, 0);
-      pdf.text("legit", 38, 25);
+      pdf.text("NGO ", 20, 25);
+      pdf.setTextColor(0, 0, 0);
+      pdf.text("EXPERTS ", 38, 25);
     }
 
     pdf.setFontSize(10);
     pdf.setFont("helvetica", "bold");
     pdf.setTextColor(0, 0, 0);
-    pdf.text("Taxlegit Consulting Private Limited", 45, 15);
+    pdf.text("NGO EXPERTS ", 65, 15);
 
     pdf.setFontSize(7.5);
     pdf.setFont("helvetica", "normal");
     pdf.setTextColor(80, 80, 80);
 
     const companyDetails = [
-      "1117, Astralis, Plot No.94, Sector-94 Noida",
+      "1117, 11th floor, Astralis, Sector-94 Noida",
       "Uttar Pradesh-201301 INDIA",
-      "GST: 09AAJCT8691F1ZN",
     ];
     companyDetails.forEach((line, index) => {
-      pdf.text(line, 45, 20 + index * 4);
+      pdf.text(line, 65, 20 + index * 4);
     });
     // --- End of Header Code ---
 
     // --- START: Updated Bill To Section ---
     pdf.setFontSize(9);
     pdf.setTextColor(80, 80, 80);
-    pdf.text("Bill To:", 20, 43);
+    pdf.text("Bill To:", 20, 35);
     pdf.setTextColor(0, 0, 0);
     if (customer) {
-      pdf.text(`Name: ${customer.fullName}`, 20, 47);
-      pdf.text(`contact: ${customer.contactNumber}`, 20, 51);
+      pdf.text(`Name: ${customer.fullName}`, 20, 39);
+      pdf.text(`Contact: ${customer.contactNumber}`, 20, 42);
 
       const currentDate = new Date()
         .toLocaleDateString("en-GB", {
@@ -154,17 +153,17 @@ export const generateInvoicePDF = async (
         })
         .replace(/\//g, "-");
       const dateTextFormatted = `Date: ${currentDate}`;
-      pdf.text(dateTextFormatted, 20, 55);
+      pdf.text(dateTextFormatted, 20, 45);
     }
     // --- END: Updated Bill To Section ---
 
     pdf.setFontSize(22);
     pdf.setTextColor(59, 130, 246);
-    pdf.text("Quotation", 20, 67);
+    pdf.text("Quotation", 20, 57);
 
     pdf.setFontSize(11);
     pdf.setTextColor(0, 0, 0);
-    let yPos = 75;
+    let yPos = 65;
     pdf.text(`Service Type: ${invoice.serviceType}`, 20, yPos);
 
     if (isSection8Company) {
@@ -422,7 +421,20 @@ export const generateInvoicePDF = async (
     pdf.setTextColor(0, 0, 0); // Set text color to black
     pdf.setFontSize(10); // Optional: set font size
 
+    // Add Final Offered Prize below total if > 0
+    if (invoice.finalPrize && invoice.finalPrize > 0) {
+      const finalPrizeText = `Final Offered Prize: ${invoice.finalPrize.toFixed(
+        2
+      )}`;
+      const finalPrizeY = totalBoxStartY + dynamicBoxHeight + 10;
+      pdf.setFont("helvetica", "bold");
+      pdf.setTextColor(255, 0, 0); // Red color
+      pdf.text(finalPrizeText, tableRightX - 3, finalPrizeY, {
+        align: "right",
+      });
+    }
     // Adjust the X and Y as needed based on your layout
+    pdf.setTextColor(0, 0, 0); // Red color
     pdf.text(
       "All Government fee and GST charges are excluded.",
       20,
