@@ -46,8 +46,9 @@ export default function CheckoutModal({
   const watchedValues = watch();
   const isFormValid = watchedValues.fullName && watchedValues.contactNumber;
 
-  // Check if current service is Section 8 Company
-  const isSection8Company = invoice.serviceType === "Section 8 Company";
+  // Check if current service is Section 8 Company Registration
+  const isSection8Company =
+    invoice.serviceType === "Section 8 Company Registration";
 
   const onSubmit = async (data: CustomerInfo) => {
     setIsSubmitting(true);

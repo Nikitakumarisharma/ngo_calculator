@@ -51,7 +51,7 @@ export default function InvoiceForm({ onInvoiceChange }: InvoiceFormProps) {
       "Trust Registration": "trust",
       "Society Registration": "society",
       "E Anudan": "e-anudan",
-      LEI: "lei",
+      "LEI Registration": "lei",
       "Trademark Registration": "trademark",
     };
 
@@ -63,8 +63,8 @@ export default function InvoiceForm({ onInvoiceChange }: InvoiceFormProps) {
     return addOns;
   };
 
-  // Check if current service is Section 8 Company
-  const isSection8Company = serviceType === "Section 8 Company";
+  // Check if current service is Section 8 Company Registration
+  const isSection8Company = serviceType === "Section 8 Company Registration";
 
   // Check if current service is one of the special offer services
   const isSpecialOfferService = [
@@ -76,7 +76,7 @@ export default function InvoiceForm({ onInvoiceChange }: InvoiceFormProps) {
   useEffect(() => {
     if (serviceType === "") return;
 
-    // For Section 8 Company, state is required
+    // For Section 8 Company Registration, state is required
     if (isSection8Company && selectedStateName === "") return;
 
     const selectedState = isSection8Company
@@ -94,7 +94,7 @@ export default function InvoiceForm({ onInvoiceChange }: InvoiceFormProps) {
     let subtotal = 0;
 
     if (isSection8Company) {
-      // Section 8 Company logic with DSC, RUN PAN TAN, state fees, and person count
+      // Section 8 Company Registration logic with DSC, RUN PAN TAN, state fees, and person count
       const baseFees = BASE_FEES_BY_TYPE[serviceType];
       const stateFee = selectedState!.fees[serviceType];
 
@@ -131,7 +131,7 @@ export default function InvoiceForm({ onInvoiceChange }: InvoiceFormProps) {
     let discount = 0;
 
     if (isSection8Company) {
-      // Section 8 Company= ₹2000 off
+      // Section 8 Company Registration= ₹2000 off
       const offerAddons = ["12a80g", "ngo-darpan"];
       const selectedOfferAddons = selectedAddOns.filter((addon) =>
         offerAddons.includes(addon.id)
@@ -244,7 +244,7 @@ export default function InvoiceForm({ onInvoiceChange }: InvoiceFormProps) {
           </select>
         </div>
 
-        {/* State Dropdown - Only show for Section 8 Company */}
+        {/* State Dropdown - Only show for Section 8 Company Registration */}
         {isSection8Company && (
           <div>
             <div className="flex items-center gap-2 mb-2">
@@ -339,7 +339,7 @@ export default function InvoiceForm({ onInvoiceChange }: InvoiceFormProps) {
         )}
       </div>
 
-      {/* Person Counter and Offer in same row - Only show for Section 8 Company */}
+      {/* Person Counter and Offer in same row - Only show for Section 8 Company Registration */}
       {isSection8Company && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {/* Person Counter */}

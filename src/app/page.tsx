@@ -41,8 +41,8 @@ export default function Home() {
         if (JSON.stringify(prev) !== JSON.stringify(newInvoice)) {
           if (hasUserSelections) {
             setUserHasSelectedServiceType(hasUserSelections.serviceType);
-            // Only set state selection if it's Section 8 Company
-            if (newInvoice.serviceType === "Section 8 Company") {
+            // Only set state selection if it's Section 8 Company Registration
+            if (newInvoice.serviceType === "Section 8 Company Registration") {
               setUserHasSelectedState(hasUserSelections.state);
             } else {
               setUserHasSelectedState(true); // For other services, state is not required
@@ -64,7 +64,8 @@ export default function Home() {
   };
 
   // Check if current service requires state selection
-  const isSection8Company = invoice.serviceType === "Section 8 Company";
+  const isSection8Company =
+    invoice.serviceType === "Section 8 Company Registration";
   const requiresStateSelection = isSection8Company;
 
   // Validation function

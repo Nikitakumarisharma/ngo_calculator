@@ -97,7 +97,8 @@ export const generateInvoicePDF = async (
     pdf.setFont("helvetica");
 
     // Check if current service is Section 8 Company
-    const isSection8Company = invoice.serviceType === "Section 8 Company";
+    const isSection8Company =
+      invoice.serviceType === "Section 8 Company Registration";
 
     // --- Start of Header Code ---
     try {

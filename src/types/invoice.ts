@@ -1,18 +1,18 @@
 export type ServiceType =
-  | "Section 8 Company"
+  | "Section 8 Company Registration"
   | "12a 80g registration"
   | "NGO Darpan"
   | "CSR-1"
   | "Trust Registration"
   | "Society Registration"
   | "E Anudan"
-  | "LEI"
+  | "LEI Registration"
   | "Trademark Registration";
 
 export interface StateInfo {
   name: string;
   fees: {
-    "Section 8 Company": number;
+    "Section 8 Company Registration": number;
   };
 }
 
@@ -64,217 +64,217 @@ export const STATES: StateInfo[] = [
   {
     name: "Andaman and Nicobar Islands",
     fees: {
-      "Section 8 Company": 20,
+      "Section 8 Company Registration": 20,
     },
   },
   {
     name: "Andhra Pradesh",
     fees: {
-      "Section 8 Company": 1520,
+      "Section 8 Company Registration": 1520,
     },
   },
   {
     name: "Arunachal Pradesh",
     fees: {
-      "Section 8 Company": 710,
+      "Section 8 Company Registration": 710,
     },
   },
   {
     name: "Assam",
     fees: {
-      "Section 8 Company": 525,
+      "Section 8 Company Registration": 525,
     },
   },
   {
     name: "Bihar",
     fees: {
-      "Section 8 Company": 100,
+      "Section 8 Company Registration": 100,
     },
   },
   {
     name: "Chandigarh",
     fees: {
-      "Section 8 Company": 3,
+      "Section 8 Company Registration": 3,
     },
   },
   {
     name: "Chhattisgarh",
     fees: {
-      "Section 8 Company": 10,
+      "Section 8 Company Registration": 10,
     },
   },
   {
     name: "Dadar nagar",
     fees: {
-      "Section 8 Company": 1,
+      "Section 8 Company Registration": 1,
     },
   },
   {
     name: "Daman and Diu",
     fees: {
-      "Section 8 Company": 20,
+      "Section 8 Company Registration": 20,
     },
   },
   {
     name: "Delhi",
     fees: {
-      "Section 8 Company": 10,
+      "Section 8 Company Registration": 10,
     },
   },
   {
     name: "Goa",
     fees: {
-      "Section 8 Company": 50,
+      "Section 8 Company Registration": 50,
     },
   },
   {
     name: "Gujarat",
     fees: {
-      "Section 8 Company": 20,
+      "Section 8 Company Registration": 20,
     },
   },
   {
     name: "Haryana",
     fees: {
-      "Section 8 Company": 15,
+      "Section 8 Company Registration": 15,
     },
   },
   {
     name: "Himachal Pradesh",
     fees: {
-      "Section 8 Company": 3,
+      "Section 8 Company Registration": 3,
     },
   },
   {
     name: "Jammu and Kashmir",
     fees: {
-      "Section 8 Company": 10,
+      "Section 8 Company Registration": 10,
     },
   },
   {
     name: "Jharkhand",
     fees: {
-      "Section 8 Company": 5,
+      "Section 8 Company Registration": 5,
     },
   },
   {
     name: "Karnataka",
     fees: {
-      "Section 8 Company": 20,
+      "Section 8 Company Registration": 20,
     },
   },
   {
     name: "Kerala",
     fees: {
-      "Section 8 Company": 3025,
+      "Section 8 Company Registration": 3025,
     },
   },
   {
     name: "Lakshadweep",
     fees: {
-      "Section 8 Company": 1525,
+      "Section 8 Company Registration": 1525,
     },
   },
   {
     name: "Madhya Pradesh",
     fees: {
-      "Section 8 Company": 7550,
+      "Section 8 Company Registration": 7550,
     },
   },
   {
     name: "Maharashtra",
     fees: {
-      "Section 8 Company": 100,
+      "Section 8 Company Registration": 100,
     },
   },
   {
     name: "Manipur",
     fees: {
-      "Section 8 Company": 260,
+      "Section 8 Company Registration": 260,
     },
   },
   {
     name: "Meghalaya",
     fees: {
-      "Section 8 Company": 410,
+      "Section 8 Company Registration": 410,
     },
   },
   {
     name: "Mizoram",
     fees: {
-      "Section 8 Company": 260,
+      "Section 8 Company Registration": 260,
     },
   },
   {
     name: "Nagaland",
     fees: {
-      "Section 8 Company": 260,
+      "Section 8 Company Registration": 260,
     },
   },
   {
     name: "Odisha",
     fees: {
-      "Section 8 Company": 610,
+      "Section 8 Company Registration": 610,
     },
   },
   {
     name: "Puducherry",
     fees: {
-      "Section 8 Company": 10,
+      "Section 8 Company Registration": 10,
     },
   },
   {
     name: "Punjab",
     fees: {
-      "Section 8 Company": 25,
+      "Section 8 Company Registration": 25,
     },
   },
   {
     name: "Rajasthan",
     fees: {
-      "Section 8 Company": 1010,
+      "Section 8 Company Registration": 1010,
     },
   },
   {
     name: "Sikkim",
     fees: {
-      "Section 8 Company": 0,
+      "Section 8 Company Registration": 0,
     },
   },
   {
     name: "Tamilnadu",
     fees: {
-      "Section 8 Company": 20,
+      "Section 8 Company Registration": 20,
     },
   },
   {
     name: "Telangana",
     fees: {
-      "Section 8 Company": 1520,
+      "Section 8 Company Registration": 1520,
     },
   },
   {
     name: "Tripura",
     fees: {
-      "Section 8 Company": 260,
+      "Section 8 Company Registration": 260,
     },
   },
   {
     name: "Uttar Pradesh",
     fees: {
-      "Section 8 Company": 1010,
+      "Section 8 Company Registration": 1010,
     },
   },
   {
     name: "Uttarakhand",
     fees: {
-      "Section 8 Company": 1010,
+      "Section 8 Company Registration": 1010,
     },
   },
   {
     name: "West Bengal",
     fees: {
-      "Section 8 Company": 10,
+      "Section 8 Company Registration": 10,
     },
   },
 ];
@@ -289,12 +289,15 @@ export const AVAILABLE_ADDONS: Omit<AddOn, "selected">[] = [
   { id: "trust", name: "Trust Registration", price: 15000 },
   { id: "society", name: "Society Registration", price: 25000 },
   { id: "e-anudan", name: "E Anudan", price: 2000 },
-  { id: "lei", name: "LEI", price: 2000 },
+  { id: "lei", name: "LEI Registration", price: 2000 },
 ];
 
-// Base fees for Section 8 Company (only service that needs DSC, RUN PAN TAN, etc.)
-export const BASE_FEES_BY_TYPE: Record<"Section 8 Company", BaseFees> = {
-  "Section 8 Company": {
+// Base fees for Section 8 Company Registration (only service that needs DSC, RUN PAN TAN, etc.)
+export const BASE_FEES_BY_TYPE: Record<
+  "Section 8 Company Registration",
+  BaseFees
+> = {
+  "Section 8 Company Registration": {
     dsc: 4720,
     runPanTan: 2456,
     professionalFee: 2499,
@@ -303,7 +306,7 @@ export const BASE_FEES_BY_TYPE: Record<"Section 8 Company", BaseFees> = {
 
 // Service fees for other services (fixed prices)
 export const SERVICE_FEES_BY_TYPE: Record<
-  Exclude<ServiceType, "Section 8 Company">,
+  Exclude<ServiceType, "Section 8 Company Registration">,
   ServiceFees
 > = {
   "12a 80g registration": {
@@ -330,7 +333,7 @@ export const SERVICE_FEES_BY_TYPE: Record<
     price: 2000,
     professionalFee: 2499,
   },
-  LEI: {
+  "LEI Registration": {
     price: 2000,
     professionalFee: 2499,
   },
@@ -340,17 +343,18 @@ export const SERVICE_FEES_BY_TYPE: Record<
   },
 };
 
-export const BASE_FEES: BaseFees = BASE_FEES_BY_TYPE["Section 8 Company"];
+export const BASE_FEES: BaseFees =
+  BASE_FEES_BY_TYPE["Section 8 Company Registration"];
 
 // Service types
 export const SERVICE_TYPES: ServiceType[] = [
-  "Section 8 Company",
+  "Section 8 Company Registration",
   "12a 80g registration",
   "NGO Darpan",
   "CSR-1",
   "Trust Registration",
   "Society Registration",
   "E Anudan",
-  "LEI",
+  "LEI Registration",
   "Trademark Registration",
 ];
