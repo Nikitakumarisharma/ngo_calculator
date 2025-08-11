@@ -38,14 +38,17 @@ export default function Home() {
 
   const [personCount, setPersonCount] = useState<number>(2);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState<"checkout" | "download">("checkout");
-  const [userHasSelectedServiceType, setUserHasSelectedServiceType] = useState(false);
+  const [modalMode, setModalMode] = useState<"checkout" | "download">(
+    "checkout"
+  );
+  const [userHasSelectedServiceType, setUserHasSelectedServiceType] =
+    useState(false);
   const [userHasSelectedState, setUserHasSelectedState] = useState(false);
 
   // ✅ Login Check via Cookie
   useEffect(() => {
     const userToken = getCookie("admin-auth-token");
-const expectedToken = process.env.NEXT_PUBLIC_ADMIN_AUTH_TOKEN;
+    const expectedToken = process.env.NEXT_PUBLIC_ADMIN_AUTH_TOKEN;
 
     if (!userToken || userToken !== expectedToken) {
       router.push("/login"); // redirect to login if not authenticated
@@ -134,8 +137,8 @@ const expectedToken = process.env.NEXT_PUBLIC_ADMIN_AUTH_TOKEN;
         <div className="mb-8">
           <InvoiceForm onInvoiceChange={handleInvoiceChange} />
         </div>
-{/* Final Prize Input Field - Admin Only */}
-<div className="mb-8 bg-blue-50 p-6 rounded-lg border border-blue-200">
+        {/* Final Prize Input Field - Admin Only */}
+        <div className="mb-8 bg-blue-50 p-6 rounded-lg border border-blue-200">
           <h2 className="text-xl font-semibold text-gray-700 mb-4">
             Final Offered Prize (Admin Only)
           </h2>
@@ -165,7 +168,6 @@ const expectedToken = process.env.NEXT_PUBLIC_ADMIN_AUTH_TOKEN;
         <div className="mb-8">
           <div className="flex justify-end gap-4">
             {/* Pay Now Button */}
-            
 
             {/* Download Button */}
             <button

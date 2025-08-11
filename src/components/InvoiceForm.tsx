@@ -131,12 +131,12 @@ export default function InvoiceForm({ onInvoiceChange }: InvoiceFormProps) {
     let discount = 0;
 
     if (isSection8Company) {
-      // Section 8 Company: Trademark + ISO + Startup India + IEC = ₹2000 off
-      const offerAddons = ["trademark", "iso", "startup-india", "iec"];
+      // Section 8 Company= ₹2000 off
+      const offerAddons = ["12a80g", "ngo-darpan"];
       const selectedOfferAddons = selectedAddOns.filter((addon) =>
         offerAddons.includes(addon.id)
       );
-      hasSpecialOffer = selectedOfferAddons.length === 4;
+      hasSpecialOffer = selectedOfferAddons.length === 2;
       discount = hasSpecialOffer ? 2000 : 0;
     } else {
       // Check if user has selected the three special services (main service + add-ons)
@@ -387,7 +387,7 @@ export default function InvoiceForm({ onInvoiceChange }: InvoiceFormProps) {
                     Grab <span className="text-red-700">₹2,000</span> OFF
                     instantly!{" "}
                   </span>
-                  Pick Trademark, ISO, Startup India & IEC together
+                  Pick 12a&80g + Ngo Darpan together
                 </p>
                 <p className="text-gray-700 text-xs">
                   Offer expires in&nbsp; <MidnightCountdown />

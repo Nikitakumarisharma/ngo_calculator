@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
-import nodemailer from 'nodemailer';
-import { InvoiceData, CustomerInfo } from '../../../types/invoice';
+import { NextRequest, NextResponse } from "next/server";
+import nodemailer from "nodemailer";
+import { InvoiceData, CustomerInfo } from "../../../types/invoice";
 
 interface EmailRequest {
   invoice: InvoiceData;
   customer: CustomerInfo;
-  mode?: 'checkout' | 'download';
+  mode?: "checkout" | "download";
 }
 
 // Create transporter (you'll need to configure this with your email service)
@@ -14,20 +14,25 @@ const createTransporter = () => {
   // For production, use environment variables
   return nodemailer.createTransport({
     // Example configuration for Gmail (you'll need to set up app passwords)
-    service: 'gmail',
+    service: "gmail",
     auth: {
-      user: process.env.EMAIL_USER || 'your-email@gmail.com',
-      pass: process.env.EMAIL_PASS || 'your-app-password'
-    }
+      user: process.env.EMAIL_USER || "your-email@gmail.com",
+      pass: process.env.EMAIL_PASS || "your-app-password",
+    },
   });
 };
 
-const generateInvoiceHTML = (invoice: InvoiceData, customer: CustomerInfo, mode: string = 'checkout') => {
+const generateInvoiceHTML = (
+  invoice: InvoiceData,
+  customer: CustomerInfo,
+  mode: string = "checkout"
+) => {
   const formatCurrency = (amount: number) => `${amount.toLocaleString()}`;
-  
-  // Check if current service is Section 8 Company
-  const isSection8Company = invoice.serviceType === "Section 8 Company";
-  
+
+  // Check if current service is Section 8 Company Registration
+  const isSection8Company =
+    invoice.serviceType === "Section 8 Company Registration";
+
   return `
     <!DOCTYPE html>
     <html>
@@ -50,7 +55,11 @@ const generateInvoiceHTML = (invoice: InvoiceData, customer: CustomerInfo, mode:
     <body>
       <div class="container">
         <div class="header">
-          <h1>${mode === 'download' ? '📄 PDF Download Request' : '🧾 Invoice Generated'}</h1>
+          <h1>${
+            mode === "download"
+              ? "📄 PDF Download Request"
+              : "🧾 Invoice Generated"
+          }</h1>
           <p>Company Registration Services</p>
         </div>
         
@@ -62,12 +71,18 @@ const generateInvoiceHTML = (invoice: InvoiceData, customer: CustomerInfo, mode:
           <div class="invoice-details">
             <h3>Invoice Details</h3>
             <p><strong>Service Type:</strong> ${invoice.serviceType}</p>
-            ${isSection8Company ? `<p><strong>State:</strong> ${invoice.state.name}</p>` : ''}
+            ${
+              isSection8Company
+                ? `<p><strong>State:</strong> ${invoice.state.name}</p>`
+                : ""
+            }
             
             <hr style="margin: 20px 0;">
             
             <h4>Fee Breakdown</h4>
-            ${isSection8Company ? `
+            ${
+              isSection8Company
+                ? `
               <div class="fee-item">
                 <span>2 x DSC Fees</span>
                 <span>${formatCurrency(invoice.baseFees!.dsc)}</span>
@@ -78,45 +93,62 @@ const generateInvoiceHTML = (invoice: InvoiceData, customer: CustomerInfo, mode:
               </div>
               <div class="fee-item">
                 <span>Professional Fees</span>
-                <span>${formatCurrency(invoice.baseFees!.professionalFee)}</span>
+                <span>${formatCurrency(
+                  invoice.baseFees!.professionalFee
+                )}</span>
               </div>
               <div class="fee-item">
                 <span>State Govt Fee (${invoice.state.name})</span>
                 <span>${formatCurrency(invoice.state.fee)}</span>
               </div>
-            ` : `
+            `
+                : `
               <div class="fee-item">
                 <span>Service Fee</span>
                 <span>${formatCurrency(invoice.serviceFees!.price)}</span>
               </div>
               <div class="fee-item">
                 <span>Professional Fees</span>
-                <span>${formatCurrency(invoice.serviceFees!.professionalFee)}</span>
+                <span>${formatCurrency(
+                  invoice.serviceFees!.professionalFee
+                )}</span>
               </div>
-            `}
+            `
+            }
             
-            ${invoice.addOns.length > 0 ? `
+            ${
+              invoice.addOns.length > 0
+                ? `
               <h4 style="margin-top: 20px;">Add-ons</h4>
-              ${invoice.addOns.map(addon => `
+              ${invoice.addOns
+                .map(
+                  (addon) => `
                 <div class="fee-item">
                   <span class="addon">✓ ${addon.name}</span>
                   <span>${formatCurrency(addon.price)}</span>
                 </div>
-              `).join('')}
-            ` : ''}
+              `
+                )
+                .join("")}
+            `
+                : ""
+            }
             
             <div class="total">
               <div style="display: flex; justify-content: space-between; align-items: center;">
                 <span style="font-size: 18px; font-weight: bold;">Total Payable:</span>
-                <span class="total-amount">${formatCurrency(invoice.total)}</span>
+                <span class="total-amount">${formatCurrency(
+                  invoice.total
+                )}</span>
               </div>
             </div>
           </div>
           
           <p style="margin-top: 30px; text-align: center; color: #666;">
-            ${mode === 'download'
-              ? 'Customer has downloaded the PDF invoice.<br>Please follow up for further assistance.'
-              : 'Thank you for choosing our services!<br>For any queries, please contact our support team.'
+            ${
+              mode === "download"
+                ? "Customer has downloaded the PDF invoice.<br>Please follow up for further assistance."
+                : "Thank you for choosing our services!<br>For any queries, please contact our support team."
             }
           </p>
         </div>
@@ -128,12 +160,21 @@ const generateInvoiceHTML = (invoice: InvoiceData, customer: CustomerInfo, mode:
 
 export async function POST(request: NextRequest) {
   try {
-    const { invoice, customer, mode = 'checkout' }: EmailRequest = await request.json();
+    const {
+      invoice,
+      customer,
+      mode = "checkout",
+    }: EmailRequest = await request.json();
 
     // Validate required fields
-    if (!invoice || !customer || !customer.fullName || !customer.contactNumber) {
+    if (
+      !invoice ||
+      !customer ||
+      !customer.fullName ||
+      !customer.contactNumber
+    ) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: "Missing required fields" },
         { status: 400 }
       );
     }
@@ -144,32 +185,37 @@ export async function POST(request: NextRequest) {
     // Generate HTML content
     const htmlContent = generateInvoiceHTML(invoice, customer, mode);
 
-    // Check if current service is Section 8 Company
-    const isSection8Company = invoice.serviceType === "Section 8 Company";
+    // Check if current service is Section 8 Company Registration
+    const isSection8Company =
+      invoice.serviceType === "Section 8 Company Registration";
 
     // Email options
     const mailOptions = {
-      from: process.env.EMAIL_USER || 'your-email@gmail.com',
-      to: process.env.ADMIN_EMAIL || 'admin@yourcompany.com', // Your email to receive invoices
-      subject: mode === 'download'
-        ? `PDF Download Request - ${customer.fullName} (${invoice.serviceType}${isSection8Company ? ` - ${invoice.state.name}` : ''})`
-        : `New Invoice - ${customer.fullName} (${invoice.serviceType}${isSection8Company ? ` - ${invoice.state.name}` : ''})`,
+      from: process.env.EMAIL_USER || "your-email@gmail.com",
+      to: process.env.ADMIN_EMAIL || "admin@yourcompany.com", // Your email to receive invoices
+      subject:
+        mode === "download"
+          ? `PDF Download Request - ${customer.fullName} (${
+              invoice.serviceType
+            }${isSection8Company ? ` - ${invoice.state.name}` : ""})`
+          : `New Invoice - ${customer.fullName} (${invoice.serviceType}${
+              isSection8Company ? ` - ${invoice.state.name}` : ""
+            })`,
       html: htmlContent,
-      replyTo: customer.contactNumber // You might want to add customer email field
+      replyTo: customer.contactNumber, // You might want to add customer email field
     };
 
     // Send email
     await transporter.sendMail(mailOptions);
 
     return NextResponse.json(
-      { message: 'Invoice sent successfully' },
+      { message: "Invoice sent successfully" },
       { status: 200 }
     );
-
   } catch (error) {
-    console.error('Error sending email:', error);
+    console.error("Error sending email:", error);
     return NextResponse.json(
-      { error: 'Failed to send invoice' },
+      { error: "Failed to send invoice" },
       { status: 500 }
     );
   }

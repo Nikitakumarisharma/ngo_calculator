@@ -142,8 +142,8 @@ export const generateInvoicePDF = async (
     pdf.text("Bill To:", 20, 35);
     pdf.setTextColor(0, 0, 0);
     if (customer) {
-      pdf.text(`Name: ${customer.fullName}`, 20, 39);
-      pdf.text(`Contact: ${customer.contactNumber}`, 20, 42);
+      pdf.text(`Name: ${customer.fullName}`, 20, 40);
+      pdf.text(`Contact: ${customer.contactNumber}`, 20, 44);
 
       const currentDate = new Date()
         .toLocaleDateString("en-GB", {
@@ -153,7 +153,7 @@ export const generateInvoicePDF = async (
         })
         .replace(/\//g, "-");
       const dateTextFormatted = `Date: ${currentDate}`;
-      pdf.text(dateTextFormatted, 20, 45);
+      pdf.text(dateTextFormatted, 20, 59);
     }
     // --- END: Updated Bill To Section ---
 
@@ -435,8 +435,13 @@ export const generateInvoicePDF = async (
     }
     // Adjust the X and Y as needed based on your layout
     pdf.setTextColor(0, 0, 0); // Red color
+    pdf.setFontSize(7);
     pdf.text(
-      "All Government fee and GST charges are excluded.",
+      [
+        "General Terms & Conditions",
+        "Goods & Service Charges (GST) as applicable (18%)",
+        "Govt. fee (on actual). Govt. fees shall be at actuals",
+      ],
       20,
       totalBoxStartY + dynamicBoxHeight + 10
     );
@@ -458,10 +463,10 @@ export const generateInvoicePDF = async (
     footerLeftY += 5;
     pdf.setFontSize(8);
     const paymentDetails = [
-      "Name: Taxlegit Consulting Private Limited",
-      "Account No. : 778005500100",
+      "Name: Unipact NGOExperts LLP",
+      "Account No. : 778005500107",
       "IFSC : ICIC0007780",
-      "Bank: ICICI Bank, Sector-45 Noida",
+      "Bank: : ICICI Bank, Sector-45, Noida Branch",
     ];
     paymentDetails.forEach((detail, index) =>
       pdf.text(detail, 20, footerLeftY + index * 4.5)
@@ -473,11 +478,10 @@ export const generateInvoicePDF = async (
     footerRightY += 8;
     pdf.setFontSize(8);
     const contactDetails = [
-      "Phone: +91 85957 66812",
-      "WhatsApp: +91 88104 45899",
-      "Email: 121@taxlegit.com",
-      "Website: www.taxlegit.com & ",
-      "www.ngoexperts.com",
+      // "Phone: +91 85957 66812",
+      // "WhatsApp: +91 88104 45899",
+      "Email: support@ngoexperts.com",
+      "Website: www.ngoexperts.com",
     ];
     contactDetails.forEach((contact, index) =>
       pdf.text(contact, 150, footerRightY + index * 4.5)

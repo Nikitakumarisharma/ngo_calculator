@@ -281,14 +281,8 @@ export const STATES: StateInfo[] = [
 
 // Available add-ons
 export const AVAILABLE_ADDONS: Omit<AddOn, "selected">[] = [
-  { id: "msme", name: "MSME Registration", price: 0 },
   { id: "trademark", name: "Trademark Registration", price: 2499 },
-  { id: "gst", name: "GST Registration", price: 2500 },
   { id: "iso", name: "ISO Registration", price: 2500 },
-  { id: "startup-india", name: "Startup India Filing", price: 2999 },
-  { id: "iec", name: "IEC Registration", price: 2499 },
-  { id: "fssai", name: "FSSAI Registration", price: 1999 },
-  { id: "gem", name: "GEM Registration", price: 4999 },
   { id: "csr-1", name: "CSR-1", price: 4500 },
   { id: "12a80g", name: "12a 80g registration", price: 9000 },
   { id: "ngo-darpan", name: "Ngo Darpan", price: 2500 },
