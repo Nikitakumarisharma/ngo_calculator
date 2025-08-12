@@ -5,7 +5,7 @@ export type ServiceType =
   | "CSR-1"
   | "Trust Registration"
   | "Society Registration"
-  | "E Anudan"
+  | "E Anudan Registration"
   | "LEI Registration"
   | "Trademark Registration";
 
@@ -288,7 +288,7 @@ export const AVAILABLE_ADDONS: Omit<AddOn, "selected">[] = [
   { id: "ngo-darpan", name: "Ngo Darpan", price: 2500 },
   { id: "trust", name: "Trust Registration", price: 15000 },
   { id: "society", name: "Society Registration", price: 25000 },
-  { id: "e-anudan", name: "E Anudan", price: 2000 },
+  { id: "e-anudan", name: "E Anudan Registration", price: 2000 },
   { id: "lei", name: "LEI Registration", price: 2000 },
 ];
 
@@ -329,7 +329,7 @@ export const SERVICE_FEES_BY_TYPE: Record<
     price: 25000,
     professionalFee: 2499,
   },
-  "E Anudan": {
+  "E Anudan Registration": {
     price: 2000,
     professionalFee: 2499,
   },
@@ -354,7 +354,7 @@ export const SERVICE_TYPES: ServiceType[] = [
   "CSR-1",
   "Trust Registration",
   "Society Registration",
-  "E Anudan",
+  "E Anudan Registration",
   "LEI Registration",
   "Trademark Registration",
 ];

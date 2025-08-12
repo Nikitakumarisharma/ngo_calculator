@@ -50,7 +50,7 @@ export default function InvoiceForm({ onInvoiceChange }: InvoiceFormProps) {
       "NGO Darpan": "ngo-darpan",
       "Trust Registration": "trust",
       "Society Registration": "society",
-      "E Anudan": "e-anudan",
+      "E Anudan Registration": "e-anudan",
       "LEI Registration": "lei",
       "Trademark Registration": "trademark",
     };
